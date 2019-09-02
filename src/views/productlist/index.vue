@@ -9,9 +9,6 @@
       :rowSelection="options.rowSelection"
       showPagination="auto"
     >
-    <span slot="serial" slot-scope="text, record, index">
-        {{ index + 1 }}
-      </span>
       <span slot="status" slot-scope="text">
         {{ text }}
       </span>
@@ -58,12 +55,7 @@ export default {
       // 查询参数
       queryParam: {},
       // 表头
-      columns: [
-          {
-          title: '#',
-          scopedSlots: { customRender: 'serial' }
-        },
-          
+      columns: [  
         {
           title: '农场主名称',
           dataIndex: 'name'
@@ -136,6 +128,9 @@ export default {
     },
     del() {
       let _this = this
+      console.log(_this.selectedRowKeys)
+          console.log(_this.selectedRows)
+      if (_this.selectedRowKeys !== '' && _this.selectedRows !== '' && _this.selectedRowKeys !== undefined && _this.selectedRows !== undefined && _this.selectedRowKeys.length>0 && _this.selectedRows.length) {
       this.$confirm({
         title: '提示',
         content: '确认删除吗?',
@@ -143,7 +138,7 @@ export default {
         okType: 'primary',
         cancelText: '取消',
         onOk() {
-          if (_this.selectedRowKeys !== '' && _this.selectedRows !== '' && _this.selectedRowKeys !== undefined && _this.selectedRows !== undefined) {
+          if (_this.selectedRowKeys !== '' && _this.selectedRows !== '' && _this.selectedRowKeys !== undefined && _this.selectedRows !== undefined && _this.selectedRowKeys.length>0 && _this.selectedRows.length) {
             console.log(_this.selectedRowKeys)
             console.log(_this.selectedRows)
             console.log('OK');
@@ -152,7 +147,13 @@ export default {
         onCancel() {
           console.log('Cancel');
         },
+      })
+      } else {
+        this.$warning({
+        title: '提示',
+        content: '请至少选择一项要删除的内容!',
       });
+      }
     },
     handleEdit (record) {
       console.log(record)
