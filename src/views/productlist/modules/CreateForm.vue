@@ -133,7 +133,7 @@
                 label="农产品类别"
                 :labelCol="{lg: {span: 7}, sm: {span: 7}}"
                 :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
-                :required="false"
+                :required="true"
               >
                 <a-input
                   v-decorator="[
@@ -229,9 +229,11 @@
                 :labelCol="{lg: {span: 7}, sm: {span: 7}}"
                 :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
                 :required="false"
-              >
-                <a-button type="primary">摘草莓</a-button>
-                <a-button type="primary">农家菜</a-button>
+              > <a-row type="flex">
+                <a-col><a style="margin-right: 6px;backgournd:#fff;border:1px solid #d9d9d9;color:rgba(0, 0, 0, 0.65);border-radius: 4px; padding: 6px 15px; line-height: 32px;">农家菜</a></a-col>
+                <a-col><a style="margin-right: 6px;backgournd:#fff;border:1px solid #d9d9d9;color:rgba(0, 0, 0, 0.65);border-radius: 4px; padding: 6px 15px; line-height: 32px;">摘草莓</a></a-col>
+                <a-col><a style="margin-right: 6px;backgournd:#fff;border:1px solid #d9d9d9;color:rgba(0, 0, 0, 0.65);border-radius: 4px; padding: 6px 15px; line-height: 32px;">摘葡萄</a></a-col>
+                </a-row>
               </a-form-item>
               <a-form-item
                 label="场地设施"
@@ -239,8 +241,11 @@
                 :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
                 :required="false"
               >
-                  <a-button type="primary">免费停车</a-button>
-                  <a-button type="primary">有吸烟区</a-button>
+                <a-row type="flex">
+                  <a-col><a style="margin-right: 6px;backgournd:#fff;border:1px solid #d9d9d9;color:rgba(0, 0, 0, 0.65);border-radius: 4px; padding: 6px 15px; line-height: 32px;">免费停车</a></a-col>
+                  <a-col><a style="margin-right: 6px;backgournd:#fff;border:1px solid #d9d9d9;color:rgba(0, 0, 0, 0.65);border-radius: 4px; padding: 6px 15px; line-height: 32px;">免费停车</a></a-col>
+                </a-row>
+                  
               </a-form-item>
             </a-form>
           </a-tab-pane>
@@ -374,6 +379,10 @@ export default {
     moment,
     onChange(time, timeString){
       console.log(time, timeString);
+    },
+    check() {
+      this.visible = true
+      console.log(obj)
     },
     handleProvinceChange(value) {
       this.cities = cityData[value]

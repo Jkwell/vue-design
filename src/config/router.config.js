@@ -26,23 +26,17 @@ export const asyncRouterMap = [
             meta: { title: '首页', keepAlive: false, permission: [ 'form' ] }
           },
           {
-            path: '/productlist/addlist',
-            name: 'addlist',
-            component: () => import('@/views/productlist/addlist'),
-            meta: { title: '农产品添加', keepAlive: false, permission: [ 'form' ] }
+            path: '/productlist/list',
+            name: 'list',
+            component: () => import('@/views/productlist/list'),
+            meta: { title: '农产品列表', keepAlive: false, permission: [ 'form' ] }
           },
           {
             path: '/productlist/detaillist',
             name: 'detaillist',
             component: () => import('@/views/productlist/detaillist'),
             meta: { title: '农产品详情', keepAlive: true, permission: [ 'form' ] }
-          },
-          {
-            path: '/productlist/message',
-            name: 'message',
-            component: () => import('@/views/productlist/message'),
-            meta: { title: '信息', keepAlive: false, permission: [ 'form' ] }
-          },
+          }
         ]
       },
       // dashboard

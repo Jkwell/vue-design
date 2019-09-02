@@ -1,10 +1,13 @@
 <template>
-  <div class="addlist">
-    <div class="title">
-      <span>添加</span>
-      <span style="float:right;margin-right:21px">X</span>
-    </div>
-    <div class="form">
+  <a-modal
+    title="新建农产品"
+    :width="860"
+    :visible="visible"
+    :confirmLoading="confirmLoading"
+    @ok="handleSubmit"
+    @cancel="handleCancel"
+  >
+    <a-spin :spinning="confirmLoading">
       <a-form @submit="handleSubmit" :form="form">
         <a-form-item
           label="产品名称"
@@ -269,84 +272,198 @@
           <a-button style="margin-left: 8px">保存</a-button>
         </a-form-item>
       </a-form>
-    </div>
-  </div>
+    </a-spin>
+  </a-modal>
 </template>
 
 <script>
-function getBase64 (img, callback) {
-  const reader = new FileReader()
-  reader.addEventListener('load', () => callback(reader.result))
-  reader.readAsDataURL(img)
+import moment from 'moment'
+const provinceData = ['Zhejiang', 'Jiangsu']
+const cityData = {
+  Zhejiang: ['Hangzhou', 'Ningbo', 'Wenzhou'],
+  Jiangsu: ['Nanjing', 'Suzhou', 'Zhenjiang']
 }
+const residences = [
+  {
+    value: 'zhejiang',
+    label: 'Zhejiang',
+    children: [
+      {
+        value: 'hangzhou',
+        label: 'Hangzhou',
+        children: [
+          {
+            value: 'xihu',
+            label: 'West Lake'
+          }
+        ]
+      }
+    ]
+  },
+  {
+    value: 'jiangsu',
+    label: 'Jiangsu',
+    children: [
+      {
+        value: 'nanjing',
+        label: 'Nanjing',
+        children: [
+          {
+            value: 'zhonghuamen',
+            label: 'Zhong Hua Men'
+          }
+        ]
+      }
+    ]
+  }
+]
 export default {
-  name: 'BaseForm',
   data () {
     return {
-      description: '表单页用于向用户收集或验证信息，基础表单常见于数据项较少的表单场景。',
-      value: 1,
-      loading: false,
-      imageUrl: '',
-      // form
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 7 }
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 13 }
+      },
+      fileList: [{
+        uid: '-1',
+        name: 'xxx.png',
+        status: 'done',
+        url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+        thumbUrl: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+      }, {
+        uid: '-2',
+        name: 'yyy.png',
+        status: 'done',
+        url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+        thumbUrl: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+      }],
+      visible: false,
+      confirmLoading: false,
+      provinceData,
+      cityData,
+      cities: cityData[provinceData[0]],
+      secondCity: cityData[provinceData[0]][0],
+      confirmDirty: false,
+      residences,
+      autoCompleteResult: [],
+      formItemLayout: {
+        labelCol: {
+          xs: { span: 24 },
+          sm: { span: 8 }
+        },
+        wrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 16 }
+        }
+      },
+      tailFormItemLayout: {
+        wrapperCol: {
+          xs: {
+            span: 24,
+            offset: 0
+          },
+          sm: {
+            span: 16,
+            offset: 8
+          }
+        }
+      },
       form: this.$form.createForm(this)
     }
   },
   methods: {
-    // handler
-    handleSubmit (e) {
+    add () {
+      this.visible = true
+    },
+    handleSubmit () {
+      const { form: { validateFields } } = this
+      this.confirmLoading = true
+      validateFields((errors, values) => {
+        if (!errors) {
+          console.log('values', values)
+          setTimeout(() => {
+            this.visible = false
+            this.confirmLoading = false
+            this.$emit('ok', values)
+          }, 1500)
+        } else {
+          this.confirmLoading = false
+        }
+      })
+    },
+    handleCancel () {
+      this.visible = false
+    },
+    moment,
+    onChange(time, timeString){
+      console.log(time, timeString);
+    },
+    check() {
+      this.visible = true
+      console.log(obj)
+    },
+    handleProvinceChange(value) {
+      this.cities = cityData[value]
+      this.secondCity = cityData[value][0]
+    },
+    handleSubmit(e) {
       e.preventDefault()
-      this.form.validateFields((err, values) => {
+      this.form.validateFieldsAndScroll((err, values) => {
         if (!err) {
-          // eslint-disable-next-line no-console
           console.log('Received values of form: ', values)
         }
       })
     },
-    handleChange (info) {
-      if (info.file.status === 'uploading') {
-        this.loading = true
-        return
-      }
-      if (info.file.status === 'done') {
-        // Get this url from response in real world.
-        getBase64(info.file.originFileObj, (imageUrl) => {
-          this.imageUrl = imageUrl
-          this.loading = false
-        })
+    handleConfirmBlur(e) {
+      const value = e.target.value
+      this.confirmDirty = this.confirmDirty || !!value
+    },
+    compareToFirstPassword(rule, value, callback) {
+      const form = this.form
+      if (value && value !== form.getFieldValue('password')) {
+        callback('Two passwords that you enter is inconsistent!')
+      } else {
+        callback()
       }
     },
-    beforeUpload (file) {
-      const isJPG = file.type === 'image/jpeg'
-      if (!isJPG) {
-        this.$message.error('You can only upload JPG file!')
+    validateToNextPassword(rule, value, callback) {
+      const form = this.form
+      if (value && this.confirmDirty) {
+        form.validateFields(['confirm'], { force: true })
       }
-      const isLt2M = file.size / 1024 / 1024 < 2
-      if (!isLt2M) {
-        this.$message.error('Image must smaller than 2MB!')
-      }
-      return isJPG && isLt2M
+      callback()
     },
-  },
+    edit(obj) {
+      this.visible = true
+      console.log(obj)
+    },
+    handleWebsiteChange(value) {
+      let autoCompleteResult
+      if (!value) {
+        autoCompleteResult = []
+      } else {
+        autoCompleteResult = ['.com', '.org', '.net'].map(domain => `${value}${domain}`)
+      }
+      this.autoCompleteResult = autoCompleteResult
+    }
   }
+}
 </script>
-
-<style lang="less" scoped>
-.ant-form-item {
-  margin-bottom: 0;
-}
-.addlist {
-  margin: 55px auto;
-  border-radius: 4px 4px 4px 4px;
-  box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 2);
-  height: 923px;
-  width: 650px;
-  .title {
-    font-size: 16px;
-    height: 48px;
-    line-height: 48px;
-    text-indent: 24px;
-    border-bottom: 1px solid #ccc;
-    margin-bottom: 15px
+<style scoped>
+  /* tile uploaded pictures */
+  .upload-list-inline >>> .ant-upload-list-item {
+    float: left;
+    width: 120px;
+    margin-right: 8px;
   }
-}
+  .upload-list-inline >>> .ant-upload-animate-enter {
+    animation-name: uploadAnimateInlineIn;
+  }
+  .upload-list-inline >>> .ant-upload-animate-leave {
+    animation-name: uploadAnimateInlineOut;
+  }
 </style>

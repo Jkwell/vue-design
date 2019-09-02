@@ -18,6 +18,7 @@ const serverList = (options) => {
     result.push({
       key: tmpKey,
       id: tmpKey,
+      detail: '预览详情',
       name: Mock.mock('@cname'),
       account: Mock.mock('@guid'),
       shopInfo: Mock.mock('@word'),

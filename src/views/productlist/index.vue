@@ -21,7 +21,8 @@
 
       <span slot="action" slot-scope="text, obj">
         <template>
-          <a @click="handleEdit(obj)">编辑</a>
+          <a @click="handleEdit(obj)" style="margin-right: 6px">编辑</a>
+          <a @click="handleCheck(obj)">查看</a>
         </template>
       </span>
     </s-table>
@@ -162,6 +163,9 @@ export default {
     handleEdit (record) {
       console.log(record)
       this.$refs.createModal.edit(record)
+    },
+    handleCheck(record) {
+      this.$refs.createModal.check(record)
     },
     handleOk () {
       this.$refs.table.refresh()
