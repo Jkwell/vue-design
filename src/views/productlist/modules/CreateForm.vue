@@ -201,14 +201,15 @@
                 has-feedback
               >
                 <a-row :gutter="8">
-                  <a-col :span="12">
+                  <a-col :span="11">
                   <a-select defaultValue="1"  @change="handleChange">
                     <a-select-option value="1">星期一</a-select-option>
                     <a-select-option value="2">星期二</a-select-option>
                     <a-select-option value="3">星期三</a-select-option>
                   </a-select>
                   </a-col>
-                  <a-col :span="12">
+                  <a-col :span="2">---</a-col>
+                  <a-col :span="11">
                    <a-select defaultValue="1"  @change="handleChange">
                     <a-select-option value="1">星期一</a-select-option>
                     <a-select-option value="2">星期二</a-select-option>
@@ -217,11 +218,12 @@
                   </a-col>
                   </a-row>
                    <a-row :gutter="8">
-                  <a-col :span="12">
-                  <a-time-picker @change="onChange" :defaultOpenValue="moment('00:00:00', 'HH:mm:ss')" />
+                  <a-col :span="11">
+                  <a-time-picker @change="onChange" :defaultOpenValue="moment('00:00', 'HH:mm')" />
                   </a-col>
-                  <a-col :span="12">
-                   <a-time-picker @change="onChange" :defaultOpenValue="moment('00:00:00', 'HH:mm:ss')" />
+                  <a-col :span="2">---</a-col>
+                  <a-col :span="11">
+                   <a-time-picker @change="onChange" :defaultOpenValue="moment('00:00', 'HH:mm')" />
                   </a-col>
                   </a-row>
               </a-form-item>
@@ -437,6 +439,9 @@ export default {
 }
 </script>
 <style scoped>
+.ant-time-picker{
+  width: 100%;
+}
   /* tile uploaded pictures */
   .upload-list-inline >>> .ant-upload-list-item {
     float: left;

@@ -15,10 +15,6 @@
       <span slot="status" slot-scope="text">
         {{ text }}
       </span>
-      <span slot="account" slot-scope="text">
-        <ellipsis :length="10" tooltip>{{ text }}</ellipsis>
-      </span>
-
       <span slot="action" slot-scope="text, obj">
         <template>
           <a @click="handleEdit(obj)" style="margin-right: 6px">编辑</a>
@@ -81,7 +77,6 @@ export default {
         {
           title: '单位信息',
           dataIndex: 'shopInfo',
-          sorter: true,
           needTotal: true,
         },
         {
@@ -92,7 +87,6 @@ export default {
         {
           title: '农场品列表',
           dataIndex: 'productList',
-          sorter: true,
           scopedSlots: { customRender: 'productList' }
         },
         {

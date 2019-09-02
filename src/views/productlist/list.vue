@@ -13,7 +13,7 @@
         {{ index + 1 }}
       </span>
       <span slot="detail" slot-scope="text, obj">
-        <a @click="handleCheck()">{{text}}</a>
+        <a @click="handleCheck(obj)">{{text}}</a>
       </span>
       <span slot="action" slot-scope="text, obj">
         <template>

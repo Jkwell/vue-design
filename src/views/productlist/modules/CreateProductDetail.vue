@@ -326,7 +326,7 @@ export default {
   margin-bottom: 0;
 }
 .addlist {
-  margin: 55px auto 20px auto;
+  margin: 10px auto 20px auto;
   border-radius: 4px 4px 4px 4px;
   border: 1px solid #ccc;
   width: 698px;
