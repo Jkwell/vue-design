@@ -26,28 +26,13 @@
                   ]"
                 />
               </a-form-item>
-              <a-form-item v-bind="formItemLayout" label="单位地址">
-                <a-select
-                  :defaultValue="provinceData[0]"
-                  style="width: 100px"
-                  @change="handleProvinceChange"
-                >
-                  <a-select-option v-for="province in provinceData" :key="province">{{province}}</a-select-option>
-                </a-select>
-                <a-select v-model="secondCity" style="width: 100px">
-                  <a-select-option v-for="city in cities" :key="city">{{city}}</a-select-option>
-                </a-select>
-                <a-select v-model="secondCity" style="width: 100px">
-                  <a-select-option v-for="city in cities" :key="city">{{city}}</a-select-option>
-                </a-select>
-                <a-select v-model="secondCity" style="width: 100px">
-                  <a-select-option v-for="city in cities" :key="city">{{city}}</a-select-option>
-                </a-select>
-              </a-form-item>
+              <!-- <a-form-item v-bind="formItemLayout" label="单位地址">
+                <area-select v-model="selected2" :data="$pcaa" :level="3"></area-select>
+              </a-form-item> -->
               <a-form-item v-bind="formItemLayout" label="联系人">
                 <a-input
                   v-decorator="[
-                    'confirm',
+                    'concat',
                     {
                         rules: [{
                         required: true, message: '请输入联系人',
@@ -56,14 +41,14 @@
                         }],
                     }
                     ]"
-                  type="password"
+                  type="text"
                   @blur="handleConfirmBlur"
                 />
               </a-form-item>
               <a-form-item v-bind="formItemLayout" label="联系电话">
                 <a-input
                   v-decorator="[
-          'confirm',
+          'phoneNumber',
           {
             rules: [{
               required: true, message: '请输入联系电话',
@@ -72,39 +57,42 @@
             }],
           }
         ]"
-                  type="password"
+                  type="number"
                   @blur="handleConfirmBlur"
                 />
               </a-form-item>
               <a-form-item v-bind="formItemLayout" label="邮箱地址">
-                <a-input-search placeholder="请输入邮箱地址" @search="onSearch" size="large">
+                <a-input-search placeholder="请输入邮箱地址" @search="onSearch" size="middle">
                   <a-button slot="enterButton">发送验证码</a-button>
                 </a-input-search>
               </a-form-item>
               <a-form-item v-bind="formItemLayout" label="输入验证码">
                 <a-input
                   v-decorator="[
-                    'name',
+                    'code',
                     {
-          }
+                        rules: [{
+                        required: true, message: '输入验证码',
+                        }, {
+                        validator: compareToFirstPassword,
+                        }],
+                    }
                   ]"
                 />
               </a-form-item>
               <a-form-item v-bind="formItemLayout" label="生产面积">
-                <a-auto-complete
+                <a-input
                   v-decorator="[
-          'website',
-        ]"
-                  @change="handleWebsiteChange"
-                >
-                  <template slot="dataSource">
-                    <a-select-option
-                      v-for="website in autoCompleteResult"
-                      :key="website"
-                    >{{ website }}</a-select-option>
-                  </template>
-                  <a-input />
-                </a-auto-complete>
+                    'productArea',
+                    {
+                        rules: [{
+                        required: true, message: '输入验证码',
+                        }, {
+                        validator: compareToFirstPassword,
+                        }],
+                    }
+                  ]"
+                />
               </a-form-item>
               <a-form-item v-bind="formItemLayout" label="单位介绍">
                 <a-textarea rows="4" v-decorator="[
@@ -162,19 +150,14 @@
                 :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
               >
                 <a-upload
-                  name="avatar"
-                  listType="picture-card"
-                  class="avatar-uploader"
-                  :showUploadList="false"
                   action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                  :beforeUpload="beforeUpload"
-                  @change="handleChange"
+                  listType="picture-card"
+                  :defaultFileList="fileList"
+                  class="upload-list-inline"
                 >
-                  <img v-if="imageUrl" :src="imageUrl" alt="avatar" />
-                  <div v-else>
-                    <a-icon :type="loading ? 'loading' : 'plus'" />
-                    <div class="ant-upload-text"></div>
-                  </div>
+                  <a-button>
+                    <a-icon type="upload" /> upload
+                  </a-button>
                 </a-upload>
               </a-form-item>
               <a-form-item
@@ -183,19 +166,14 @@
                 :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
               >
                 <a-upload
-                  name="avatar"
-                  listType="picture-card"
-                  class="avatar-uploader"
-                  :showUploadList="false"
                   action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                  :beforeUpload="beforeUpload"
-                  @change="handleChange"
+                  listType="picture-card"
+                  :defaultFileList="fileList"
+                  class="upload-list-inline"
                 >
-                  <img v-if="imageUrl" :src="imageUrl" alt="avatar" />
-                  <div v-else>
-                    <a-icon :type="loading ? 'loading' : 'plus'" />
-                    <div class="ant-upload-text"></div>
-                  </div>
+                  <a-button>
+                    <a-icon type="upload" /> upload
+                  </a-button>
                 </a-upload>
               </a-form-item>
               <a-form-item
@@ -204,19 +182,14 @@
                 :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
               >
                 <a-upload
-                  name="avatar"
-                  listType="picture-card"
-                  class="avatar-uploader"
-                  :showUploadList="false"
                   action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                  :beforeUpload="beforeUpload"
-                  @change="handleChange"
+                  listType="picture-card"
+                  :defaultFileList="fileList"
+                  class="upload-list-inline"
                 >
-                  <img v-if="imageUrl" :src="imageUrl" alt="avatar" />
-                  <div v-else>
-                    <a-icon :type="loading ? 'loading' : 'plus'" />
-                    <div class="ant-upload-text"></div>
-                  </div>
+                  <a-button>
+                    <a-icon type="upload" /> upload
+                  </a-button>
                 </a-upload>
               </a-form-item>
               <a-form-item
@@ -328,6 +301,19 @@ export default {
         xs: { span: 24 },
         sm: { span: 13 }
       },
+      fileList: [{
+        uid: '-1',
+        name: 'xxx.png',
+        status: 'done',
+        url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+        thumbUrl: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+      }, {
+        uid: '-2',
+        name: 'yyy.png',
+        status: 'done',
+        url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+        thumbUrl: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+      }],
       visible: false,
       confirmLoading: false,
       provinceData,
@@ -420,6 +406,10 @@ export default {
       }
       callback()
     },
+    edit(obj) {
+      this.visible = true
+      console.log(obj)
+    },
     handleWebsiteChange(value) {
       let autoCompleteResult
       if (!value) {
@@ -432,3 +422,17 @@ export default {
   }
 }
 </script>
+<style scoped>
+  /* tile uploaded pictures */
+  .upload-list-inline >>> .ant-upload-list-item {
+    float: left;
+    width: 120px;
+    margin-right: 8px;
+  }
+  .upload-list-inline >>> .ant-upload-animate-enter {
+    animation-name: uploadAnimateInlineIn;
+  }
+  .upload-list-inline >>> .ant-upload-animate-leave {
+    animation-name: uploadAnimateInlineOut;
+  }
+</style>

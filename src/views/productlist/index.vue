@@ -29,23 +29,12 @@
       <a-form layout="inline">
         <a-row type="flex" justify="end" :gutter="10">
             <a-col :offset="8"><a-button type="primary" icon="plus" @click="$refs.createModal.add()">新建</a-button></a-col>
-            <a-col><a-button type="primary">删除</a-button></a-col>
+            <a-col><a-button type="primary" @click="del">删除</a-button></a-col>
         </a-row>
       </a-form>
     </div>
     <create-form ref="createModal" @ok="handleOk" />
-    <a-modal
-      title="Modal"
-      ref="modal"
-      :visible="visible"
-      @ok="hideModal"
-      okText="确认"
-      cancelText="取消"
-    >
-      <p>确定要删除吗!</p>
-    </a-modal>
   </a-card>
-  
 </template>
 
 <script>
@@ -150,22 +139,29 @@ export default {
           }
         }
     },
-    showModal() {
-      this.visible = true
-    },
-    hideModal() {
-      this.visible = false
+    del() {
+      let _this = this
+      this.$confirm({
+        title: '提示',
+        content: '确认删除吗?',
+        okText: '确认',
+        okType: 'primary',
+        cancelText: '取消',
+        onOk() {
+          if (_this.selectedRowKeys !== '' && _this.selectedRows !== '' && _this.selectedRowKeys !== undefined && _this.selectedRows !== undefined) {
+            console.log(_this.selectedRowKeys)
+            console.log(_this.selectedRows)
+            console.log('OK');
+          }
+        },
+        onCancel() {
+          console.log('Cancel');
+        },
+      });
     },
     handleEdit (record) {
       console.log(record)
-      this.$refs.modal.edit(record)
-    },
-    handleSub (record) {
-      if (record.status !== 0) {
-        this.$message.info(`${record.no} 订阅成功`)
-      } else {
-        this.$message.error(`${record.no} 订阅失败，规则已关闭`)
-      }
+      this.$refs.createModal.edit(record)
     },
     handleOk () {
       this.$refs.table.refresh()
@@ -178,10 +174,7 @@ export default {
       this.advanced = !this.advanced
     },
     add() {
-        alert('dd')
-    },
-    delete() {
-      this.visible = true
+        console.log('dddddd')
     },
     resetSearchForm () {
       this.queryParam = {

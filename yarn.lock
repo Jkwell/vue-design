@@ -1851,6 +1851,18 @@ are-we-there-yet@~1.1.2:
     delegates "^1.0.0"
     readable-stream "^2.0.6"
 
+area-data-vue@^1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/area-data-vue/-/area-data-vue-1.0.8.tgz#83b7f975467858ce429e5a5bf030d01cc4ba0483"
+  integrity sha512-IajX8mQlkJTGH5S5clXCsUHFFWv2LnOTSrehy/tDDjkUsn5XwGL7caa/A7GpWA5a2V7VZgvaIZN59A+DCYgY1Q==
+
+area-linkage-vue@^5.1.2:
+  version "5.1.2"
+  resolved "https://registry.yarnpkg.com/area-linkage-vue/-/area-linkage-vue-5.1.2.tgz#6d47170cf1e4f440cd997b2c4a6dbc7526b24a40"
+  integrity sha512-R/jmYlw0IOyPW4WihDSfjdhZMLOT5qC4hT2CSIZbT59hKm0T9uWocsoDOZL/sdr5nkrS7ix1/9y2iztq/v6zvg==
+  dependencies:
+    lodash.find "^4.6.0"
+
 argparse@^1.0.7:
   version "1.0.10"
   resolved "https://registry.npmjs.org/argparse/-/argparse-1.0.10.tgz#bcd6791ea5ae09725e17e5ad988134cd40b3d911"
@@ -7016,6 +7028,11 @@ lodash.defaultsdeep@^4.6.0:
   version "4.6.1"
   resolved "https://registry.yarnpkg.com/lodash.defaultsdeep/-/lodash.defaultsdeep-4.6.1.tgz#512e9bd721d272d94e3d3a63653fa17516741ca6"
   integrity sha512-3j8wdDzYuWO3lM3Reg03MuQR957t287Rpcxp1njpEa8oDrikb+FwGdW3n+FELh/A6qib6yPit0j/pv9G/yeAqA==
+
+lodash.find@^4.6.0:
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/lodash.find/-/lodash.find-4.6.0.tgz#cb0704d47ab71789ffa0de8b97dd926fb88b13b1"
+  integrity sha1-ywcE1Hq3F4n/oN6Ll92Sb7iLE7E=
 
 lodash.get@^4.4.2:
   version "4.4.2"

@@ -3,6 +3,8 @@ import '@babel/polyfill'
 
 import Vue from 'vue'
 import App from './App.vue'
+import { pcaa } from 'area-data-vue'
+import VueAreaLinkage from 'area-linkage-vue'
 import router from './router'
 import store from './store/'
 import { VueAxios } from './utils/request'
@@ -16,7 +18,8 @@ import './permission' // permission control
 import './utils/filter' // global filter
 
 Vue.config.productionTip = false
-
+Vue.prototype.$pcaa = pcaa
+Vue.use(VueAreaLinkage)
 // mount axios Vue.$http and this.$http
 Vue.use(VueAxios)
 
