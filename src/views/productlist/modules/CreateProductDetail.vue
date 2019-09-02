@@ -1,6 +1,16 @@
 <template>
-  <div class="addlist">
-    <img src="../../assets/bg.png" width="100%" height="200px" alt="">
+  <a-modal
+    title="详情"
+    :width="748"
+    :visible="visible"
+    :confirmLoading="confirmLoading"
+    :footer="null"
+    @ok="handleSubmit"
+    @cancel="handleCancel"
+  >
+    <a-spin :spinning="confirmLoading">
+      <div class="addlist">
+    <img src="../../../assets/bg.png" width="100%" height="200px" alt="">
     <div class="title">
       <div class="subtitle">嘉兴葡萄</div>
       <div class="weight">规格(重/数量+单位)</div>
@@ -88,32 +98,32 @@
     <div class="rank-wrap">
       <div class="productTitle">产地环境气候</div>
       <div class="weather"><span class="cd">产地</span>嘉兴市</div>
-      <img src="../../assets/bg.png" width="100%" height="200px" alt="">
+      <img src="../../../assets/bg.png" width="100%" height="200px" alt="">
     </div>
     <div class="rank-wrap" style="border: none;">
       <div class="productTitle">更多农产品</div>
       <div class="pictures">
         <div class="picture-item">
           <div class="picture">
-            <img src="../../assets/logo.png" width="100" height="100" alt="">
+            <img src="../../../assets/logo.png" width="100" height="100" alt="">
           </div>
           <div class="text">农产品</div>
         </div>
         <div class="picture-item">
           <div class="picture">
-            <img src="../../assets/logo.png" width="100" height="100" alt="">
+            <img src="../../../assets/logo.png" width="100" height="100" alt="">
           </div>
           <div class="text">农产品</div>
         </div>
         <div class="picture-item">
           <div class="picture">
-            <img src="../../assets/logo.png" width="100" height="100" alt="">
+            <img src="../../../assets/logo.png" width="100" height="100" alt="">
           </div>
           <div class="text">农产品</div>
         </div>
         <div class="picture-item">
           <div class="picture">
-            <img src="../../assets/logo.png" width="100" height="100" alt="">
+            <img src="../../../assets/logo.png" width="100" height="100" alt="">
           </div> 
           <div class="text">农产品</div>
         </div>
@@ -121,15 +131,192 @@
     </div>
     <div class="rank-wrap">
       <div class="productTitle">产品介绍</div>
-      <img src="../../assets/bg.png" width="100%" alt="">
+      <img src="../../../assets/bg.png" width="100%" alt="">
       <div class="desc">
         标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题
         标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题
       </div>
     </div>
   </div>
+    </a-spin>
+  </a-modal>
 </template>
+
 <script>
+import moment from 'moment'
+const provinceData = ['Zhejiang', 'Jiangsu']
+const cityData = {
+  Zhejiang: ['Hangzhou', 'Ningbo', 'Wenzhou'],
+  Jiangsu: ['Nanjing', 'Suzhou', 'Zhenjiang']
+}
+const residences = [
+  {
+    value: 'zhejiang',
+    label: 'Zhejiang',
+    children: [
+      {
+        value: 'hangzhou',
+        label: 'Hangzhou',
+        children: [
+          {
+            value: 'xihu',
+            label: 'West Lake'
+          }
+        ]
+      }
+    ]
+  },
+  {
+    value: 'jiangsu',
+    label: 'Jiangsu',
+    children: [
+      {
+        value: 'nanjing',
+        label: 'Nanjing',
+        children: [
+          {
+            value: 'zhonghuamen',
+            label: 'Zhong Hua Men'
+          }
+        ]
+      }
+    ]
+  }
+]
+export default {
+  data () {
+    return {
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 7 }
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 13 }
+      },
+      fileList: [{
+        uid: '-1',
+        name: 'xxx.png',
+        status: 'done',
+        url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+        thumbUrl: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+      }, {
+        uid: '-2',
+        name: 'yyy.png',
+        status: 'done',
+        url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+        thumbUrl: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+      }],
+      visible: false,
+      confirmLoading: false,
+      provinceData,
+      cityData,
+      cities: cityData[provinceData[0]],
+      secondCity: cityData[provinceData[0]][0],
+      confirmDirty: false,
+      residences,
+      autoCompleteResult: [],
+      formItemLayout: {
+        labelCol: {
+          xs: { span: 24 },
+          sm: { span: 8 }
+        },
+        wrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 16 }
+        }
+      },
+      tailFormItemLayout: {
+        wrapperCol: {
+          xs: {
+            span: 24,
+            offset: 0
+          },
+          sm: {
+            span: 16,
+            offset: 8
+          }
+        }
+      },
+      form: this.$form.createForm(this)
+    }
+  },
+  methods: {
+    add () {
+      this.visible = true
+    },
+    handleSubmit () {
+      const { form: { validateFields } } = this
+      this.confirmLoading = true
+      validateFields((errors, values) => {
+        if (!errors) {
+          console.log('values', values)
+          setTimeout(() => {
+            this.visible = false
+            this.confirmLoading = false
+            this.$emit('ok', values)
+          }, 1500)
+        } else {
+          this.confirmLoading = false
+        }
+      })
+    },
+    handleCancel () {
+      this.visible = false
+    },
+    moment,
+    onChange(time, timeString){
+      console.log(time, timeString);
+    },
+    check() {
+      this.visible = true
+    },
+    handleProvinceChange(value) {
+      this.cities = cityData[value]
+      this.secondCity = cityData[value][0]
+    },
+    handleSubmit(e) {
+      e.preventDefault()
+      this.form.validateFieldsAndScroll((err, values) => {
+        if (!err) {
+          console.log('Received values of form: ', values)
+        }
+      })
+    },
+    handleConfirmBlur(e) {
+      const value = e.target.value
+      this.confirmDirty = this.confirmDirty || !!value
+    },
+    compareToFirstPassword(rule, value, callback) {
+      const form = this.form
+      if (value && value !== form.getFieldValue('password')) {
+        callback('Two passwords that you enter is inconsistent!')
+      } else {
+        callback()
+      }
+    },
+    validateToNextPassword(rule, value, callback) {
+      const form = this.form
+      if (value && this.confirmDirty) {
+        form.validateFields(['confirm'], { force: true })
+      }
+      callback()
+    },
+    edit(obj) {
+      this.visible = true
+      console.log(obj)
+    },
+    handleWebsiteChange(value) {
+      let autoCompleteResult
+      if (!value) {
+        autoCompleteResult = []
+      } else {
+        autoCompleteResult = ['.com', '.org', '.net'].map(domain => `${value}${domain}`)
+      }
+      this.autoCompleteResult = autoCompleteResult
+    }
+  }
+}
 </script>
 <style lang="less">
 .ant-input-disabled{
@@ -139,10 +326,10 @@
   margin-bottom: 0;
 }
 .addlist {
-  margin: 55px auto;
+  margin: 55px auto 20px auto;
   border-radius: 4px 4px 4px 4px;
   border: 1px solid #ccc;
-  width: 650px;
+  width: 698px;
 }
 .title{
   display: flex;

@@ -4,6 +4,7 @@
     :width="860"
     :visible="visible"
     :confirmLoading="confirmLoading"
+    :footer="null"
     @ok="handleSubmit"
     @cancel="handleCancel"
   >
@@ -99,9 +100,9 @@
             'description',
           ]" />
               </a-form-item>
-              <!-- <a-form-item v-bind="tailFormItemLayout">
-                <a-button type="primary" html-type="submit">保存</a-button>
-              </a-form-item> -->
+              <a-form-item v-bind="tailFormItemLayout">
+                <a-row type="flex" justify="end"><a-button type="primary" html-type="submit">保存</a-button></a-row>
+              </a-form-item>
             </a-form>
           </a-tab-pane>
           <a-tab-pane key="2">
@@ -246,6 +247,10 @@
                   <a-col><a style="margin-right: 6px;backgournd:#fff;border:1px solid #d9d9d9;color:rgba(0, 0, 0, 0.65);border-radius: 4px; padding: 6px 15px; line-height: 32px;">免费停车</a></a-col>
                 </a-row>
                   
+              </a-form-item>
+              <a-form-item>
+                <a-row type="flex" justify="end"><a-button type="primary" html-type="submit">保存</a-button></a-row>
+                
               </a-form-item>
             </a-form>
           </a-tab-pane>

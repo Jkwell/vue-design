@@ -30,12 +30,6 @@ export const asyncRouterMap = [
             name: 'list',
             component: () => import('@/views/productlist/list'),
             meta: { title: '农产品列表', keepAlive: false, permission: [ 'form' ] }
-          },
-          {
-            path: '/productlist/detaillist',
-            name: 'detaillist',
-            component: () => import('@/views/productlist/detaillist'),
-            meta: { title: '农产品详情', keepAlive: true, permission: [ 'form' ] }
           }
         ]
       },

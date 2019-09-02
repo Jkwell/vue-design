@@ -12,13 +12,14 @@
     <span slot="serial" slot-scope="text, record, index">
         {{ index + 1 }}
       </span>
-      <span slot="detail" slot-scope="text">
-        <a>{{text}}</a>
+      <span slot="detail" slot-scope="text, obj">
+        <a @click="handleCheck()">{{text}}</a>
       </span>
       <span slot="action" slot-scope="text, obj">
         <template>
-          <a @click="handleEdit(obj)" style="margin-right: 6px">编辑</a>
-          <a @click="handleCheck(obj)">查看</a>
+          <a-button type="default" @click="handleCheck" style="margin-bottom: 4px;margin-right: 6px">提示有错误信息</a-button>
+          <a-button type="default" @click="handleCheck" style="margin-bottom: 4px">通过审核</a-button>
+          <a-button type="default" @click="handleEdit(obj)" >编辑</a-button>
         </template>
       </span>
     </s-table>
@@ -31,6 +32,7 @@
       </a-form>
     </div>
     <create-form ref="createModal" @ok="handleOk" />
+    <create-detail ref="createDetail" @ok="handleOk" />
   </a-card>
 </template>
 
@@ -39,6 +41,7 @@ import moment from 'moment'
 import { STable, Ellipsis } from '@/components'
 import StepByStepModal from './modules/StepByStepModal'
 import CreateForm from './modules/CreateProductForm'
+import CreateDetail from './modules/CreateProductDetail'
 import { getRoleList, getServiceList } from '@/api/manage'
 
 export default {
@@ -47,7 +50,8 @@ export default {
     STable,
     Ellipsis,
     CreateForm,
-    StepByStepModal
+    StepByStepModal,
+    CreateDetail
   },
   data () {
     return {
@@ -77,7 +81,7 @@ export default {
         {
           title: '操作',
           dataIndex: 'action',
-          width: '150px',
+          width: '280px',
           scopedSlots: { customRender: 'action' }
         }
       ],
@@ -140,11 +144,12 @@ export default {
       });
     },
     handleEdit (record) {
-      console.log(record)
+      console.log(this.$refs.createModal)
       this.$refs.createModal.edit(record)
     },
-    handleCheck(record) {
-      this.$refs.createModal.check(record)
+    handleCheck() {
+      console.log(this.$refs.createDetail)
+      this.$refs.createDetail.check()
     },
     handleOk () {
       this.$refs.table.refresh()

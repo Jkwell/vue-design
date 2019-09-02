@@ -4,6 +4,7 @@
     :width="860"
     :visible="visible"
     :confirmLoading="confirmLoading"
+    :footer="null"
     @ok="handleSubmit"
     @cancel="handleCancel"
   >
