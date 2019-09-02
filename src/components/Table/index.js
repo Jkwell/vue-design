@@ -1,4 +1,4 @@
-import T from 'ant-design-vue/es/table/Table'
+﻿import T from 'ant-design-vue/es/table/Table'
 import get from 'lodash.get'
 
 export default {
@@ -54,10 +54,10 @@ export default {
       default: null
     },
     /** @Deprecated */
-    showAlertInfo: {
-      type: Boolean,
-      default: false
-    },
+    // showAlertInfo: {
+    //   type: Boolean,
+    //   default: false
+    // },
     showPagination: {
       type: String | Boolean,
       default: 'auto'
@@ -269,7 +269,7 @@ export default {
   render () {
     const props = {}
     const localKeys = Object.keys(this.$data)
-    const showAlert = (typeof this.alert === 'object' && this.alert !== null && this.alert.show) && typeof this.rowSelection.selectedRowKeys !== 'undefined' || this.alert
+    // const showAlert = (typeof this.alert === 'object' && this.alert !== null && this.alert.show) && typeof this.rowSelection.selectedRowKeys !== 'undefined' || this.alert
 
     Object.keys(T.props).forEach(k => {
       const localKey = `local${k.substring(0, 1).toUpperCase()}${k.substring(1)}`
@@ -278,7 +278,7 @@ export default {
         return props[k]
       }
       if (k === 'rowSelection') {
-        if (showAlert && this.rowSelection) {
+        if (this.rowSelection) {
           // 如果需要使用alert，则重新绑定 rowSelection 事件
           console.log('this.rowSelection', this.rowSelection)
           props[k] = {
@@ -308,7 +308,6 @@ export default {
 
     return (
       <div class="table-wrapper">
-        { showAlert ? this.renderAlert() : null }
         { table }
       </div>
     )

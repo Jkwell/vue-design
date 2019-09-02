@@ -1,4 +1,4 @@
-import Mock from 'mockjs2'
+﻿import Mock from 'mockjs2'
 import { builder, getQueryParameters } from '../util'
 
 const totalCount = 5701
@@ -18,11 +18,11 @@ const serverList = (options) => {
     result.push({
       key: tmpKey,
       id: tmpKey,
-      no: 'No ' + tmpKey,
-      description: '这是一段描述',
-      callNo: Mock.mock('@integer(1, 999)'),
-      status: Mock.mock('@integer(0, 3)'),
-      updatedAt: Mock.mock('@datetime'),
+      name: Mock.mock('@cname'),
+      account: Mock.mock('@guid'),
+      shopInfo: Mock.mock('@word'),
+      status: Mock.mock('@boolean'),
+      productList: Mock.mock('@sentence'),
       editable: false
     })
   }

@@ -1,0 +1,434 @@
+<template>
+  <a-modal
+    title="新建农场"
+    :width="860"
+    :visible="visible"
+    :confirmLoading="confirmLoading"
+    @ok="handleSubmit"
+    @cancel="handleCancel"
+  >
+    <a-spin :spinning="confirmLoading">
+      <a-tabs defaultActiveKey="1">
+          <a-tab-pane key="1">
+            <span slot="tab">基本信息</span>
+            <a-form :form="form" @submit="handleSubmit">
+              <a-form-item v-bind="formItemLayout" label="单位名称">
+                <a-input
+                  v-decorator="[
+                    'name',
+                    {
+                    rules: [{
+                    required: true, message: '请输入单位名称',
+                    }, {
+                    validator: compareToFirstPassword,
+                    }],
+                        }
+                  ]"
+                />
+              </a-form-item>
+              <a-form-item v-bind="formItemLayout" label="单位地址">
+                <a-select
+                  :defaultValue="provinceData[0]"
+                  style="width: 100px"
+                  @change="handleProvinceChange"
+                >
+                  <a-select-option v-for="province in provinceData" :key="province">{{province}}</a-select-option>
+                </a-select>
+                <a-select v-model="secondCity" style="width: 100px">
+                  <a-select-option v-for="city in cities" :key="city">{{city}}</a-select-option>
+                </a-select>
+                <a-select v-model="secondCity" style="width: 100px">
+                  <a-select-option v-for="city in cities" :key="city">{{city}}</a-select-option>
+                </a-select>
+                <a-select v-model="secondCity" style="width: 100px">
+                  <a-select-option v-for="city in cities" :key="city">{{city}}</a-select-option>
+                </a-select>
+              </a-form-item>
+              <a-form-item v-bind="formItemLayout" label="联系人">
+                <a-input
+                  v-decorator="[
+                    'confirm',
+                    {
+                        rules: [{
+                        required: true, message: '请输入联系人',
+                        }, {
+                        validator: compareToFirstPassword,
+                        }],
+                    }
+                    ]"
+                  type="password"
+                  @blur="handleConfirmBlur"
+                />
+              </a-form-item>
+              <a-form-item v-bind="formItemLayout" label="联系电话">
+                <a-input
+                  v-decorator="[
+          'confirm',
+          {
+            rules: [{
+              required: true, message: '请输入联系电话',
+            }, {
+              validator: compareToFirstPassword,
+            }],
+          }
+        ]"
+                  type="password"
+                  @blur="handleConfirmBlur"
+                />
+              </a-form-item>
+              <a-form-item v-bind="formItemLayout" label="邮箱地址">
+                <a-input-search placeholder="请输入邮箱地址" @search="onSearch" size="large">
+                  <a-button slot="enterButton">发送验证码</a-button>
+                </a-input-search>
+              </a-form-item>
+              <a-form-item v-bind="formItemLayout" label="输入验证码">
+                <a-input
+                  v-decorator="[
+                    'name',
+                    {
+          }
+                  ]"
+                />
+              </a-form-item>
+              <a-form-item v-bind="formItemLayout" label="生产面积">
+                <a-auto-complete
+                  v-decorator="[
+          'website',
+        ]"
+                  @change="handleWebsiteChange"
+                >
+                  <template slot="dataSource">
+                    <a-select-option
+                      v-for="website in autoCompleteResult"
+                      :key="website"
+                    >{{ website }}</a-select-option>
+                  </template>
+                  <a-input />
+                </a-auto-complete>
+              </a-form-item>
+              <a-form-item v-bind="formItemLayout" label="单位介绍">
+                <a-textarea rows="4" v-decorator="[
+            'description',
+          ]" />
+              </a-form-item>
+              <!-- <a-form-item v-bind="tailFormItemLayout">
+                <a-button type="primary" html-type="submit">保存</a-button>
+              </a-form-item> -->
+            </a-form>
+          </a-tab-pane>
+          <a-tab-pane key="2">
+            <span slot="tab">农场信息</span>
+            <a-form @submit="handleSubmit" :form="form">
+              <a-form-item
+                v-bind="formItemLayout"
+                label="行业"
+                :labelCol="{lg: {span: 7}, sm: {span: 7}}"
+                :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
+                has-feedback
+              >
+                <a-select
+                  v-decorator="[
+                    'select',
+                    {rules: [{ required: true, message: '请输入行业名称' }]}
+                  ]"
+                  placeholder="请输入行业名称"
+                >
+                  <a-select-option value="china">
+                    水果
+                  </a-select-option>
+                  <a-select-option value="usa">
+                    电子
+                  </a-select-option>
+                </a-select>
+              </a-form-item>
+              <a-form-item
+                label="农产品类别"
+                :labelCol="{lg: {span: 7}, sm: {span: 7}}"
+                :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
+                :required="false"
+              >
+                <a-input
+                  v-decorator="[
+                  'check',
+                  {rules: [{ required: true, message: '请输入农产品类别' }]}
+                ]"
+                  name="check"
+                  placeholder="请输入农产品类别"
+                />
+              </a-form-item>
+              <a-form-item
+                label="环境设施"
+                :labelCol="{lg: {span: 7}, sm: {span: 7}}"
+                :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
+              >
+                <a-upload
+                  name="avatar"
+                  listType="picture-card"
+                  class="avatar-uploader"
+                  :showUploadList="false"
+                  action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                  :beforeUpload="beforeUpload"
+                  @change="handleChange"
+                >
+                  <img v-if="imageUrl" :src="imageUrl" alt="avatar" />
+                  <div v-else>
+                    <a-icon :type="loading ? 'loading' : 'plus'" />
+                    <div class="ant-upload-text"></div>
+                  </div>
+                </a-upload>
+              </a-form-item>
+              <a-form-item
+                label="荣誉证书"
+                :labelCol="{lg: {span: 7}, sm: {span: 7}}"
+                :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
+              >
+                <a-upload
+                  name="avatar"
+                  listType="picture-card"
+                  class="avatar-uploader"
+                  :showUploadList="false"
+                  action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                  :beforeUpload="beforeUpload"
+                  @change="handleChange"
+                >
+                  <img v-if="imageUrl" :src="imageUrl" alt="avatar" />
+                  <div v-else>
+                    <a-icon :type="loading ? 'loading' : 'plus'" />
+                    <div class="ant-upload-text"></div>
+                  </div>
+                </a-upload>
+              </a-form-item>
+              <a-form-item
+                label="单位执照"
+                :labelCol="{lg: {span: 7}, sm: {span: 7}}"
+                :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
+              >
+                <a-upload
+                  name="avatar"
+                  listType="picture-card"
+                  class="avatar-uploader"
+                  :showUploadList="false"
+                  action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                  :beforeUpload="beforeUpload"
+                  @change="handleChange"
+                >
+                  <img v-if="imageUrl" :src="imageUrl" alt="avatar" />
+                  <div v-else>
+                    <a-icon :type="loading ? 'loading' : 'plus'" />
+                    <div class="ant-upload-text"></div>
+                  </div>
+                </a-upload>
+              </a-form-item>
+              <a-form-item
+                v-bind="formItemLayout"
+                label="营业时间"
+                :labelCol="{lg: {span: 7}, sm: {span: 7}}"
+                :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
+                has-feedback
+              >
+                <a-row :gutter="8">
+                  <a-col :span="12">
+                  <a-select defaultValue="1"  @change="handleChange">
+                    <a-select-option value="1">星期一</a-select-option>
+                    <a-select-option value="2">星期二</a-select-option>
+                    <a-select-option value="3">星期三</a-select-option>
+                  </a-select>
+                  </a-col>
+                  <a-col :span="12">
+                   <a-select defaultValue="1"  @change="handleChange">
+                    <a-select-option value="1">星期一</a-select-option>
+                    <a-select-option value="2">星期二</a-select-option>
+                    <a-select-option value="3">星期三</a-select-option>
+                  </a-select>
+                  </a-col>
+                  </a-row>
+                   <a-row :gutter="8">
+                  <a-col :span="12">
+                  <a-time-picker @change="onChange" :defaultOpenValue="moment('00:00:00', 'HH:mm:ss')" />
+                  </a-col>
+                  <a-col :span="12">
+                   <a-time-picker @change="onChange" :defaultOpenValue="moment('00:00:00', 'HH:mm:ss')" />
+                  </a-col>
+                  </a-row>
+              </a-form-item>
+              <a-form-item
+                label="特色服务"
+                :labelCol="{lg: {span: 7}, sm: {span: 7}}"
+                :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
+                :required="false"
+              >
+                <a-button type="primary">摘草莓</a-button>
+                <a-button type="primary">农家菜</a-button>
+              </a-form-item>
+              <a-form-item
+                label="场地设施"
+                :labelCol="{lg: {span: 7}, sm: {span: 7}}"
+                :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
+                :required="false"
+              >
+                  <a-button type="primary">免费停车</a-button>
+                  <a-button type="primary">有吸烟区</a-button>
+              </a-form-item>
+            </a-form>
+          </a-tab-pane>
+        </a-tabs>
+    </a-spin>
+  </a-modal>
+</template>
+
+<script>
+import moment from 'moment'
+const provinceData = ['Zhejiang', 'Jiangsu']
+const cityData = {
+  Zhejiang: ['Hangzhou', 'Ningbo', 'Wenzhou'],
+  Jiangsu: ['Nanjing', 'Suzhou', 'Zhenjiang']
+}
+const residences = [
+  {
+    value: 'zhejiang',
+    label: 'Zhejiang',
+    children: [
+      {
+        value: 'hangzhou',
+        label: 'Hangzhou',
+        children: [
+          {
+            value: 'xihu',
+            label: 'West Lake'
+          }
+        ]
+      }
+    ]
+  },
+  {
+    value: 'jiangsu',
+    label: 'Jiangsu',
+    children: [
+      {
+        value: 'nanjing',
+        label: 'Nanjing',
+        children: [
+          {
+            value: 'zhonghuamen',
+            label: 'Zhong Hua Men'
+          }
+        ]
+      }
+    ]
+  }
+]
+export default {
+  data () {
+    return {
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 7 }
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 13 }
+      },
+      visible: false,
+      confirmLoading: false,
+      provinceData,
+      cityData,
+      cities: cityData[provinceData[0]],
+      secondCity: cityData[provinceData[0]][0],
+      confirmDirty: false,
+      residences,
+      autoCompleteResult: [],
+      formItemLayout: {
+        labelCol: {
+          xs: { span: 24 },
+          sm: { span: 8 }
+        },
+        wrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 16 }
+        }
+      },
+      tailFormItemLayout: {
+        wrapperCol: {
+          xs: {
+            span: 24,
+            offset: 0
+          },
+          sm: {
+            span: 16,
+            offset: 8
+          }
+        }
+      },
+      form: this.$form.createForm(this)
+    }
+  },
+  methods: {
+    add () {
+      this.visible = true
+    },
+    handleSubmit () {
+      const { form: { validateFields } } = this
+      this.confirmLoading = true
+      validateFields((errors, values) => {
+        if (!errors) {
+          console.log('values', values)
+          setTimeout(() => {
+            this.visible = false
+            this.confirmLoading = false
+            this.$emit('ok', values)
+          }, 1500)
+        } else {
+          this.confirmLoading = false
+        }
+      })
+    },
+    handleCancel () {
+      this.visible = false
+    },
+    moment,
+    onChange(time, timeString){
+      console.log(time, timeString);
+    },
+    handleProvinceChange(value) {
+      this.cities = cityData[value]
+      this.secondCity = cityData[value][0]
+    },
+    handleSubmit(e) {
+      e.preventDefault()
+      this.form.validateFieldsAndScroll((err, values) => {
+        if (!err) {
+          console.log('Received values of form: ', values)
+        }
+      })
+    },
+    handleConfirmBlur(e) {
+      const value = e.target.value
+      this.confirmDirty = this.confirmDirty || !!value
+    },
+    compareToFirstPassword(rule, value, callback) {
+      const form = this.form
+      if (value && value !== form.getFieldValue('password')) {
+        callback('Two passwords that you enter is inconsistent!')
+      } else {
+        callback()
+      }
+    },
+    validateToNextPassword(rule, value, callback) {
+      const form = this.form
+      if (value && this.confirmDirty) {
+        form.validateFields(['confirm'], { force: true })
+      }
+      callback()
+    },
+    handleWebsiteChange(value) {
+      let autoCompleteResult
+      if (!value) {
+        autoCompleteResult = []
+      } else {
+        autoCompleteResult = ['.com', '.org', '.net'].map(domain => `${value}${domain}`)
+      }
+      this.autoCompleteResult = autoCompleteResult
+    }
+  }
+}
+</script>

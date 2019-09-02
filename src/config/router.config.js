@@ -1,4 +1,4 @@
-// eslint-disable-next-line
+﻿// eslint-disable-next-line
 import { UserLayout, BasicLayout, RouteView, BlankLayout, PageView } from '@/layouts'
 import { bxAnaalyse } from '@/core/icons'
 
@@ -19,6 +19,12 @@ export const asyncRouterMap = [
         component: RouteView,
         meta: { title: '农产品', keepAlive: true, icon: bxAnaalyse, permission: [ 'form' ] },
         children: [
+          {
+            path: '/productlist/index',
+            name: 'index',
+            component: () => import('@/views/productlist/index'),
+            meta: { title: '首页', keepAlive: false, permission: [ 'form' ] }
+          },
           {
             path: '/productlist/addlist',
             name: 'addlist',
