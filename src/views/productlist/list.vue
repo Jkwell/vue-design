@@ -29,7 +29,7 @@
       </span>
     </s-table>
     
-    <create-form ref="createModal" @refresh="refresh" @ok="handleOk" />
+    <create-form ref="createModal" :account="currentAccount" @close="onModalClose" @refresh="refresh" @ok="handleOk" />
     <create-detail ref="createDetail" @ok="handleOk" />
   </a-card>
 </template>
@@ -59,6 +59,8 @@ export default {
     //   advanced: false,
       // 查询参数
       queryParam: {},
+      
+      currentAccount: null,
       // 表头
       columns: [
           
@@ -117,6 +119,10 @@ export default {
           }
         }
     },
+    onModalClose() {
+      this.currentAccount = null
+      this.visible = false
+    },
     del() {
       let _this = this
       console.log(_this.selectedRowKeys)
@@ -158,7 +164,8 @@ export default {
     handleEdit (record) {
       console.log(record)
       Object.assign(record, {action: 'edit'})
-      this.$refs.createModal.edit(record)
+      this.currentAccount = record
+      this.$refs.createModal.edit()
     },
     handleCheck() {
       console.log(this.$refs.createDetail)

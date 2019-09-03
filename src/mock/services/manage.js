@@ -78,29 +78,33 @@ const getProductList = (options) => {
 const modifyProduct = (req) => {
   const objParams = req.body
   const params = JSON.parse(objParams)
-  console.log(params)
+  
   productList.some(u => {
-    if (u.key === params.key) {
-      console.log('333')
-      // u.auth= params.auth,
-      // u.check= params.check,
-      // u.code= params.code,
-      // u.company= params.company,
-      // u.dayTime= params.dayTime,
-      // u.description= params.description,
-      // u.eatMethod= params.eatMethod,
-      // u.endTime= params.endTime,
-      // u.grade=params.grade,
-      // u.heart= params.heart,
-      // u.name= params.name,
-      // u.shop= params.shop,
-      // u.shopChannel= params.shopChannel,
-      // u.startTime= params.startTime,
-      // u.url=params.url,
-      // u.weight= params.weight
-      // return true
+    if (u.id === params.id) {
+      console.log('zhengque')
+      u.auth= params.auth,
+      u.check= params.check,
+      u.code= params.code,
+      u.company= params.company,
+      u.dayTime= params.dayTime,
+      u.description= params.description,
+      u.eatMethod= params.eatMethod,
+      u.endTime= params.endTime,
+      u.grade=params.grade,
+      u.heart= params.heart,
+      u.name= params.name,
+      u.shop= params.shop,
+      u.shopChannel= params.shopChannel,
+      u.startTime= params.startTime,
+      u.url=params.url,
+      u.weight= params.weight
+      return true
     }
   })
+  console.log(productList)
+  return {
+    'success': true
+  }
 }
 const deleteOne = (options) => {
   const parameters = getQueryParameters(options)
@@ -117,7 +121,7 @@ const addOne = (req) => {
   const params = JSON.parse(objParams)
   console.log(params)
   productList.push({
-    key: Mock.mock('@guid'),
+    id: '100',
     auth: params.auth,
     check: params.check,
     code: params.code,

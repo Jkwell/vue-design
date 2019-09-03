@@ -5,7 +5,7 @@
     :visible="visible"
     :confirmLoading="confirmLoading"
     :footer="null"
-    @cancel="handleCancel"
+    @cancel="handleCancel(false)"
   >
     <a-spin :spinning="confirmLoading">
       <a-form @submit="handleSubmit" :form="form">
@@ -18,7 +18,7 @@
           <a-input
             v-decorator="[
             'name',
-            {initialValue: account.name ? account.name : '',rules: [{ required: true, message: '请输入产品名称' }]}
+            {initialValue: account && account.name ,rules: [{ required: true, message: '请输入产品名称' }]}
           ]"
             name="name"
             placeholder="请输入产品名称"
@@ -33,7 +33,7 @@
           <a-input
             v-decorator="[
             'weight',
-            {initialValue: account.weight ? account.weight : '',rules: [{ required: true, message: '请输入重量或数量' }]}
+            {initialValue: account && account.weight ,rules: [{ required: true, message: '请输入重量或数量' }]}
           ]"
             name="weight"
             placeholder="请输入重量或数量"
@@ -48,7 +48,7 @@
           <a-input
             v-decorator="[
             'company',
-            {initialValue: account.company ? account.company : '',rules: [{ required: true, message: '请输入单位名称' }]}
+            {initialValue: account && account.company,rules: [{ required: true, message: '请输入单位名称' }]}
           ]"
             name="company"
             placeholder="请输入单位名称"
@@ -63,7 +63,7 @@
           <a-input
             v-decorator="[
             'code',
-            {initialValue: account.code ? account.code : '',rules: [{ required: true, message: '请输入溯源条码' }]}
+            {initialValue: account && account.code,rules: [{ required: true, message: '请输入溯源条码' }]}
           ]"
             name="code"
             placeholder="请输入溯源条码"
@@ -81,7 +81,7 @@
             placeholder="请选择开始日期"
             v-decorator="[
             'startTime',
-            {initialValue: moment(account.startTime) ? moment(account.startTime) : '',rules: [{ required: true, message: '请选择开始日期' }]}
+            {rules: [{ required: true, message: '请选择开始日期' }]}
           ]"
           />
           <text>——</text>
@@ -91,7 +91,7 @@
             placeholder="请选择截止日期"
             v-decorator="[
             'endTime',
-            {initialValue: moment(account.endTime) ? moment(account.endTime) : '',rules: [{ required: true, message: '请选择截止日期' }]}
+            {rules: [{ required: true, message: '请选择截止日期' }]}
           ]"
           />
         </a-form-item>
@@ -103,14 +103,14 @@
         >
         <a-row :gutter="8">
           <a-col :span="16">
-          <a-select placeholder="请输入储藏方式" v-decorator="['heart', {initialValue: account.heart ? account.heart : '1', rules: [{ required: true, message: '请选择储藏方式' }]}]"  @change="handleChange">
+          <a-select placeholder="请输入储藏方式" v-decorator="['heart', {initialValue: account && account.heart ? account.heart : '1', rules: [{ required: true, message: '请选择储藏方式' }]}]"  @change="handleChange">
             <a-select-option value="1">冷藏1</a-select-option>
             <a-select-option value="2">冷藏2</a-select-option>
             <a-select-option value="3">冷藏3</a-select-option>
           </a-select>
           </a-col>
           <a-col :span="8">
-            <a-input-number v-decorator="['dayTime', {initialValue: account.dayTime ? account.dayTime : '', rules: [{ required: true, message: '请输入天数' }]}]" :min="1" :max="10" @change="onChange" />天
+            <a-input-number v-decorator="['dayTime', {initialValue: account && account.dayTime, rules: [{ required: true, message: '请输入天数' }]}]" :min="1" :max="10" @change="onChange" />天
           </a-col>
           
           </a-row>
@@ -124,7 +124,7 @@
           <a-input
             v-decorator="[
             'eatMethod',
-            {initialValue: account.eatMethod ? account.eatMethod : '', rules: [{ required: true, message: '请输入食用方法' }]}
+            {initialValue: account && account.eatMethod, rules: [{ required: true, message: '请输入食用方法' }]}
           ]"
             name="eatMethod"
             placeholder="请输入食用方法"
@@ -163,7 +163,7 @@
           placeholder="请输入产品介绍"
           v-decorator="[
             'description',
-            {initialValue: account.description ? account.description : '', rules: [{ required: true, message: '请输入产品介绍' }]}
+            {initialValue: account && account.description, rules: [{ required: true, message: '请输入产品介绍' }]}
           ]" />
         </a-form-item>
         
@@ -175,7 +175,7 @@
         >
         <a-row :gutter="8">
           <a-col :span="16">
-          <a-select placeholder="请输入采购渠道" v-decorator="['shopChannel', {initialValue: account.shopChannel ? account.shopChannel : '4', rules: [{ required: true, message: '请输入采购渠道' }]}]" @change="handleShop">
+          <a-select placeholder="请输入采购渠道" v-decorator="['shopChannel', {initialValue: account && account.shopChannel ? account.shopChannel : '4', rules: [{ required: true, message: '请输入采购渠道' }]}]" @change="handleShop">
             <a-select-option value="4">jk1</a-select-option>
             <a-select-option value="5">jk2</a-select-option>
             <a-select-option value="6">其他</a-select-option>
@@ -186,7 +186,7 @@
             v-if="showChannel"
             v-decorator="[
             'channel',
-            {initialValue: account.channel ? account.channel : '', rules: [{ required: true, message: '人工填写' }]}
+            {initialValue: account && account.channel , rules: [{ required: true, message: '人工填写' }]}
           ]"
             name="channel"
             placeholder="人工填写"
@@ -203,7 +203,7 @@
           <a-input
             v-decorator="[
             'shop',
-            {initialValue: account.shop ? account.shop : '', rules: [{ required: true, message: '请输入店铺名称'}]}
+            {initialValue: account && account.shop, rules: [{ required: true, message: '请输入店铺名称'}]}
           ]"
             name="shop"
             placeholder="请输入店铺名称"
@@ -218,7 +218,7 @@
           <a-input
             v-decorator="[
             'url',
-            {initialValue: account.url ? account.url : '',rules: [{ required: true, message: '请输入网址' }]}
+            {initialValue: account && account.url,rules: [{ required: true, message: '请输入网址' }]}
           ]"
             name="url"
             placeholder="请输入网址"
@@ -233,7 +233,7 @@
           <a-input
             v-decorator="[
             'check',
-            {initialValue: account.check ? account.check : '',rules: [{ required: true, message: '请输入检测名称' }]}
+            {initialValue: account && account.check,rules: [{ required: true, message: '请输入检测名称' }]}
           ]"
             name="check"
             placeholder="请输入检测名称"
@@ -248,7 +248,7 @@
           <a-input
             v-decorator="[
             'auth',
-            {initialValue: account.auth ? account.auth : '',rules: [{ required: true, message: '请输入认证名称' }]}
+            {initialValue:account && account.auth,rules: [{ required: true, message: '请输入认证名称' }]}
           ]"
             name="auth"
             placeholder="请输入认证名称"
@@ -263,7 +263,7 @@
           <a-input
             v-decorator="[
             'grade',
-            {initialValue: account.grade ? account.grade : '',rules: [{ required: true, message: '请输入等级评定' }]}
+            {initialValue: account && account.grade, rules: [{ required: true, message: '请输入等级评定' }]}
           ]"
             name="grade"
             placeholder="请输入等级评定"
@@ -283,6 +283,9 @@
 import moment from 'moment'
 import { addOne, modifyProduct} from '@/api/manage'
 export default {
+  props: {
+    account: Object
+  }, 
   data () {
     return {
       labelCol: {
@@ -300,7 +303,6 @@ export default {
       confirmLoading: false,
       confirmDirty: false,
       dayTime: '',
-      account: {},
       autoCompleteResult: [],
       showChannel: false,
       formItemLayout: {
@@ -344,6 +346,8 @@ export default {
     },
     
     handleCancel () {
+      this.form.resetFields()
+      this.$emit('close')
       this.visible = false
     },
     cancel () {
@@ -379,23 +383,30 @@ export default {
       let _this = this
       e.preventDefault()
       this.form.validateFieldsAndScroll((err, values) => {
+        console.log(this.account)
         if (!err) {
-          if (this.account.action === 'edit') {
-                 modifyProduct(values).then((res) => {
+          if (this.account !== null && this.account.action === 'edit') {
+                 const upValues = {...values, id: '100'}
+                 modifyProduct(upValues).then((res) => {
                    _this.$message.success('修改成功');   
+                   this.form.resetFields()
+                   this.$emit('close') 
                    this.visible = false
                     this.$emit('refresh')
                  })
                } else {
            addOne(values).then((res) => {
+             console.log('zhengai')
              if (res.success === true) {
-               
-               _this.$message.success('添加成功');   
+               console.log('xxxxx')
+               _this.$message.success('添加成功'); 
+               this.form.resetFields()
+               this.$emit('close')  
                this.visible = false
                this.$emit('refresh')
              }
            })
-           }
+        }
           console.log('Received values of form: ', values)
         }
       })
@@ -419,10 +430,9 @@ export default {
       }
       callback()
     },
-    edit(obj) {
+    edit() {
       this.visible = true
-      this.account = obj
-      console.log(obj)
+      console.log()
     },
     handleWebsiteChange(value) {
       let autoCompleteResult
