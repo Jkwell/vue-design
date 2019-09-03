@@ -4,9 +4,13 @@ const api = {
   user: '/user',
   role: '/role',
   service: '/service',
+  product: '/product',
   permission: '/permission',
   permissionNoPager: '/permission/no-pager',
-  orgTree: '/org/tree'
+  orgTree: '/org/tree',
+  deleteOne: '/deleteOne',
+  addOne: '/addOne',
+  modifyProduct: '/modifyProduct'
 }
 
 export default api
@@ -19,6 +23,29 @@ export function getUserList (parameter) {
   })
 }
 
+export function deleteOne (parameter) {
+  return axios({
+    url: api.deleteOne,
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function addOne (params) {
+  return axios({
+    url: api.addOne,
+    method: 'post',
+    data: params
+  })
+}
+
+export function modifyProduct (params) {
+  return axios({
+    url: api.modifyProduct,
+    method: 'post',
+    data: params
+  })
+}
 export function getRoleList (parameter) {
   return axios({
     url: api.role,
@@ -35,6 +62,13 @@ export function getServiceList (parameter) {
   })
 }
 
+export function getProductList (parameter) {
+  return axios({
+    url: api.product,
+    method: 'get',
+    params: parameter
+  })
+}
 export function getPermissions (parameter) {
   return axios({
     url: api.permissionNoPager,

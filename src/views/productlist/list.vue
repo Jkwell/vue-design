@@ -1,5 +1,13 @@
 <template>
   <a-card :bordered="true">
+    <div class="table-operator">
+      <a-form layout="inline">
+        <a-row type="flex" justify="end" :gutter="10">
+            <a-col :offset="8"><a-button type="primary" icon="plus" @click="$refs.createModal.add()">新建</a-button></a-col>
+            <a-col><a-button type="primary" @click="del">删除</a-button></a-col>
+        </a-row>
+      </a-form>
+    </div>
     <s-table
       ref="table"
       size="default"
@@ -9,29 +17,19 @@
       :rowSelection="options.rowSelection"
       showPagination="auto"
     >
-    <span slot="serial" slot-scope="text, record, index">
-        {{ index + 1 }}
-      </span>
       <span slot="detail" slot-scope="text, obj">
         <a @click="handleCheck(obj)">{{text}}</a>
       </span>
       <span slot="action" slot-scope="text, obj">
         <template>
-          <a-button type="default" @click="handleCheck" style="margin-bottom: 4px;margin-right: 6px">提示有错误信息</a-button>
-          <a-button type="default" @click="handleCheck" style="margin-bottom: 4px">通过审核</a-button>
+          <a-button type="default" @click="handleError" style="margin-bottom: 4px;margin-right: 6px">提示有错误信息</a-button>
+          <a-button type="default" @click="handleSuc" style="margin-bottom: 4px">通过审核</a-button>
           <a-button type="default" @click="handleEdit(obj)" >编辑</a-button>
         </template>
       </span>
     </s-table>
-    <div class="table-operator">
-      <a-form layout="inline">
-        <a-row type="flex" justify="end" :gutter="10">
-            <a-col :offset="8"><a-button type="primary" icon="plus" @click="$refs.createModal.add()">新建</a-button></a-col>
-            <a-col><a-button type="primary" @click="del">删除</a-button></a-col>
-        </a-row>
-      </a-form>
-    </div>
-    <create-form ref="createModal" @ok="handleOk" />
+    
+    <create-form ref="createModal" @refresh="refresh" @ok="handleOk" />
     <create-detail ref="createDetail" @ok="handleOk" />
   </a-card>
 </template>
@@ -42,7 +40,7 @@ import { STable, Ellipsis } from '@/components'
 import StepByStepModal from './modules/StepByStepModal'
 import CreateForm from './modules/CreateProductForm'
 import CreateDetail from './modules/CreateProductDetail'
-import { getRoleList, getServiceList } from '@/api/manage'
+import { getRoleList, getProductList, deleteOne } from '@/api/manage'
 
 export default {
   name: 'TableList',
@@ -63,10 +61,6 @@ export default {
       queryParam: {},
       // 表头
       columns: [
-          {
-          title: '#',
-          scopedSlots: { customRender: 'serial' }
-        },
           
         {
           title: '农产品名称',
@@ -88,7 +82,7 @@ export default {
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         console.log('loadData.parameter', parameter)
-        return getServiceList(Object.assign(parameter, this.queryParam))
+        return getProductList(Object.assign(parameter, this.queryParam))
           .then(res => {
             return res.result
           })
@@ -125,6 +119,9 @@ export default {
     },
     del() {
       let _this = this
+      console.log(_this.selectedRowKeys)
+          console.log(_this.selectedRows)
+      if (_this.selectedRowKeys !== '' && _this.selectedRows !== '' && _this.selectedRowKeys !== undefined && _this.selectedRows !== undefined && _this.selectedRowKeys.length>0 && _this.selectedRows.length) {
       this.$confirm({
         title: '提示',
         content: '确认删除吗?',
@@ -133,18 +130,34 @@ export default {
         cancelText: '取消',
         onOk() {
           if (_this.selectedRowKeys !== '' && _this.selectedRows !== '' && _this.selectedRowKeys !== undefined && _this.selectedRows !== undefined) {
-            console.log(_this.selectedRowKeys)
-            console.log(_this.selectedRows)
-            console.log('OK');
+            const id = _this.selectedRows[0].id
+            const obj = {id: id}
+            deleteOne(obj).then(res => {
+              if (res.success === true) {
+                _this.$message.success('删除成功');   
+                _this.$refs.table.refresh(true);
+              }
+            })
           }
         },
         onCancel() {
           console.log('Cancel');
         },
+      })
+      } else {
+        this.$warning({
+        title: '提示',
+        content: '请至少选择一项要删除的内容!',
       });
+      }
+    },
+    refresh() {
+      console.log('ddd')
+      this.$refs.table.refresh(true);
     },
     handleEdit (record) {
-      console.log(this.$refs.createModal)
+      console.log(record)
+      Object.assign(record, {action: 'edit'})
       this.$refs.createModal.edit(record)
     },
     handleCheck() {
@@ -158,11 +171,17 @@ export default {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
     },
-    toggleAdvanced () {
-      this.advanced = !this.advanced
+    handleError() {
+      this.$warning({
+        title: '提示',
+        content: '有违规信息请检查!',
+      });
     },
-    add() {
-        console.log('dddddd')
+    handleSuc() {
+      this.$success({
+        title: '提示',
+        content: '通过审核!',
+      });
     },
     resetSearchForm () {
       this.queryParam = {

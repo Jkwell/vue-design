@@ -5,7 +5,6 @@
     :visible="visible"
     :confirmLoading="confirmLoading"
     :footer="null"
-    @ok="handleSubmit"
     @cancel="handleCancel"
   >
     <a-spin :spinning="confirmLoading">
@@ -19,7 +18,7 @@
           <a-input
             v-decorator="[
             'name',
-            {rules: [{ required: true, message: '请输入产品名称' }]}
+            {initialValue: account.name ? account.name : '',rules: [{ required: true, message: '请输入产品名称' }]}
           ]"
             name="name"
             placeholder="请输入产品名称"
@@ -34,7 +33,7 @@
           <a-input
             v-decorator="[
             'weight',
-            {rules: [{ required: true, message: '请输入重量或数量' }]}
+            {initialValue: account.weight ? account.weight : '',rules: [{ required: true, message: '请输入重量或数量' }]}
           ]"
             name="weight"
             placeholder="请输入重量或数量"
@@ -49,7 +48,7 @@
           <a-input
             v-decorator="[
             'company',
-            {rules: [{ required: true, message: '请输入单位名称' }]}
+            {initialValue: account.company ? account.company : '',rules: [{ required: true, message: '请输入单位名称' }]}
           ]"
             name="company"
             placeholder="请输入单位名称"
@@ -64,7 +63,7 @@
           <a-input
             v-decorator="[
             'code',
-            {rules: [{ required: true, message: '请输入溯源条码' }]}
+            {initialValue: account.code ? account.code : '',rules: [{ required: true, message: '请输入溯源条码' }]}
           ]"
             name="code"
             placeholder="请输入溯源条码"
@@ -82,7 +81,7 @@
             placeholder="请选择开始日期"
             v-decorator="[
             'startTime',
-            {rules: [{ required: true, message: '请选择开始日期' }]}
+            {initialValue: moment(account.startTime) ? moment(account.startTime) : '',rules: [{ required: true, message: '请选择开始日期' }]}
           ]"
           />
           <text>——</text>
@@ -92,7 +91,7 @@
             placeholder="请选择截止日期"
             v-decorator="[
             'endTime',
-            {rules: [{ required: true, message: '请选择截止日期' }]}
+            {initialValue: moment(account.endTime) ? moment(account.endTime) : '',rules: [{ required: true, message: '请选择截止日期' }]}
           ]"
           />
         </a-form-item>
@@ -104,15 +103,16 @@
         >
         <a-row :gutter="8">
           <a-col :span="16">
-          <a-select defaultValue="1"  @change="handleChange">
+          <a-select placeholder="请输入储藏方式" v-decorator="['heart', {initialValue: account.heart ? account.heart : '1', rules: [{ required: true, message: '请选择储藏方式' }]}]"  @change="handleChange">
             <a-select-option value="1">冷藏1</a-select-option>
             <a-select-option value="2">冷藏2</a-select-option>
             <a-select-option value="3">冷藏3</a-select-option>
           </a-select>
           </a-col>
           <a-col :span="8">
-            <a-input-number :min="1" :max="10" v-model="dayTime" @change="onChange" />
+            <a-input-number v-decorator="['dayTime', {initialValue: account.dayTime ? account.dayTime : '', rules: [{ required: true, message: '请输入天数' }]}]" :min="1" :max="10" @change="onChange" />天
           </a-col>
+          
           </a-row>
         </a-form-item>
         <a-form-item
@@ -124,33 +124,34 @@
           <a-input
             v-decorator="[
             'eatMethod',
-            {rules: [{ required: true, message: '请输入食用方法' }]}
+            {initialValue: account.eatMethod ? account.eatMethod : '', rules: [{ required: true, message: '请输入食用方法' }]}
           ]"
             name="eatMethod"
             placeholder="请输入食用方法"
           />
         </a-form-item>
-        <a-form-item
+        <!-- <a-form-item
           label="照片"
           :labelCol="{lg: {span: 7}, sm: {span: 7}}"
           :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
         >
           <a-upload
-            name="avatar"
-            listType="picture-card"
-            class="avatar-uploader"
-            :showUploadList="false"
+            name="upload"
             action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-            :beforeUpload="beforeUpload"
-            @change="handleChange"
+            listType="picture-card"
+            @preview="handlePreview"
+            @change="handleUpload"
+            class="upload-list-inline"
           >
-            <img v-if="imageUrl" :src="imageUrl" alt="avatar" />
-            <div v-else>
-              <a-icon :type="loading ? 'loading' : 'plus'" />
-              <div class="ant-upload-text"></div>
+            <div v-if="fileList.length < 3">
+              <a-icon type="plus" />
+              <div class="ant-upload-text">Upload</div>
             </div>
           </a-upload>
-        </a-form-item>
+          <a-modal :visible="previewVisible" :footer="null" @cancel="cancelUpload">
+          <img alt="example" style="width: 100%" :src="previewImage" />
+        </a-modal>
+        </a-form-item> -->
         <a-form-item
           label="产品介绍"
           :labelCol="{lg: {span: 7}, sm: {span: 7}}"
@@ -162,7 +163,7 @@
           placeholder="请输入产品介绍"
           v-decorator="[
             'description',
-            {rules: [{ required: true, message: '请输入产品介绍' }]}
+            {initialValue: account.description ? account.description : '', rules: [{ required: true, message: '请输入产品介绍' }]}
           ]" />
         </a-form-item>
         
@@ -174,17 +175,18 @@
         >
         <a-row :gutter="8">
           <a-col :span="16">
-          <a-select defaultValue="4" @change="handleChange">
+          <a-select placeholder="请输入采购渠道" v-decorator="['shopChannel', {initialValue: account.shopChannel ? account.shopChannel : '4', rules: [{ required: true, message: '请输入采购渠道' }]}]" @change="handleShop">
             <a-select-option value="4">jk1</a-select-option>
             <a-select-option value="5">jk2</a-select-option>
             <a-select-option value="6">其他</a-select-option>
           </a-select>
           </a-col>
-          <a-col :span="8">
+          <a-col :span="8" >
           <a-input
+            v-if="showChannel"
             v-decorator="[
             'channel',
-            {rules: [{ required: true, message: '人工填写' }]}
+            {initialValue: account.channel ? account.channel : '', rules: [{ required: true, message: '人工填写' }]}
           ]"
             name="channel"
             placeholder="人工填写"
@@ -201,7 +203,7 @@
           <a-input
             v-decorator="[
             'shop',
-            {rules: [{ required: true, message: '请输入店铺名称'}]}
+            {initialValue: account.shop ? account.shop : '', rules: [{ required: true, message: '请输入店铺名称'}]}
           ]"
             name="shop"
             placeholder="请输入店铺名称"
@@ -216,7 +218,7 @@
           <a-input
             v-decorator="[
             'url',
-            {rules: [{ required: true, message: '请输入网址' }]}
+            {initialValue: account.url ? account.url : '',rules: [{ required: true, message: '请输入网址' }]}
           ]"
             name="url"
             placeholder="请输入网址"
@@ -231,7 +233,7 @@
           <a-input
             v-decorator="[
             'check',
-            {rules: [{ required: true, message: '请输入检测名称' }]}
+            {initialValue: account.check ? account.check : '',rules: [{ required: true, message: '请输入检测名称' }]}
           ]"
             name="check"
             placeholder="请输入检测名称"
@@ -246,7 +248,7 @@
           <a-input
             v-decorator="[
             'auth',
-            {rules: [{ required: true, message: '请输入认证名称' }]}
+            {initialValue: account.auth ? account.auth : '',rules: [{ required: true, message: '请输入认证名称' }]}
           ]"
             name="auth"
             placeholder="请输入认证名称"
@@ -261,7 +263,7 @@
           <a-input
             v-decorator="[
             'grade',
-            {rules: [{ required: true, message: '请输入等级评定' }]}
+            {initialValue: account.grade ? account.grade : '',rules: [{ required: true, message: '请输入等级评定' }]}
           ]"
             name="grade"
             placeholder="请输入等级评定"
@@ -270,7 +272,7 @@
         <a-row><div class="line" style="height:1px;width:100%;background:#ccc;margin:30px 0 15px 0;"></div></a-row>
         <a-form-item :wrapperCol="{ span: 24 }" style="text-align: right;margin-right:25px">
           <a-button htmlType="submit" type="primary">提交</a-button>
-          <a-button style="margin-left: 8px">保存</a-button>
+          <a-button style="margin-left: 8px" @click="cancel">取消</a-button>
         </a-form-item>
       </a-form>
     </a-spin>
@@ -279,45 +281,7 @@
 
 <script>
 import moment from 'moment'
-const provinceData = ['Zhejiang', 'Jiangsu']
-const cityData = {
-  Zhejiang: ['Hangzhou', 'Ningbo', 'Wenzhou'],
-  Jiangsu: ['Nanjing', 'Suzhou', 'Zhenjiang']
-}
-const residences = [
-  {
-    value: 'zhejiang',
-    label: 'Zhejiang',
-    children: [
-      {
-        value: 'hangzhou',
-        label: 'Hangzhou',
-        children: [
-          {
-            value: 'xihu',
-            label: 'West Lake'
-          }
-        ]
-      }
-    ]
-  },
-  {
-    value: 'jiangsu',
-    label: 'Jiangsu',
-    children: [
-      {
-        value: 'nanjing',
-        label: 'Nanjing',
-        children: [
-          {
-            value: 'zhonghuamen',
-            label: 'Zhong Hua Men'
-          }
-        ]
-      }
-    ]
-  }
-]
+import { addOne, modifyProduct} from '@/api/manage'
 export default {
   data () {
     return {
@@ -329,28 +293,16 @@ export default {
         xs: { span: 24 },
         sm: { span: 13 }
       },
-      fileList: [{
-        uid: '-1',
-        name: 'xxx.png',
-        status: 'done',
-        url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        thumbUrl: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-      }, {
-        uid: '-2',
-        name: 'yyy.png',
-        status: 'done',
-        url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        thumbUrl: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-      }],
+      fileList: [],
       visible: false,
+      previewVisible: false,
+      previewImage: '',
       confirmLoading: false,
-      provinceData,
-      cityData,
-      cities: cityData[provinceData[0]],
-      secondCity: cityData[provinceData[0]][0],
       confirmDirty: false,
-      residences,
+      dayTime: '',
+      account: {},
       autoCompleteResult: [],
+      showChannel: false,
       formItemLayout: {
         labelCol: {
           xs: { span: 24 },
@@ -380,24 +332,25 @@ export default {
     add () {
       this.visible = true
     },
-    handleSubmit () {
-      const { form: { validateFields } } = this
-      this.confirmLoading = true
-      validateFields((errors, values) => {
-        if (!errors) {
-          console.log('values', values)
-          setTimeout(() => {
-            this.visible = false
-            this.confirmLoading = false
-            this.$emit('ok', values)
-          }, 1500)
-        } else {
-          this.confirmLoading = false
-        }
-      })
+    handleChange(value) {
+      console.log(value)
     },
+    handleShop(value) {
+      if (value === '6') {
+        this.showChannel = true
+      } else {
+        this.showChannel = false
+      }
+    },
+    
     handleCancel () {
       this.visible = false
+    },
+    cancel () {
+      this.visible = false
+    },
+    cancelUpload () {
+      this.previewVisible = false
     },
     moment,
     onChange(time, timeString){
@@ -407,14 +360,42 @@ export default {
       this.visible = true
       console.log(obj)
     },
-    handleProvinceChange(value) {
-      this.cities = cityData[value]
-      this.secondCity = cityData[value][0]
+    handlePreview (file) {
+      console.log(file)
+      this.previewImage = file.response.url || file.response.thumbUrl
+      this.previewVisible = true
+    },
+    handleUpload (file) {
+      let fileLists = [];
+      console.log(file)
+      for (let i = 0; i< file.fileList.length; i++) {
+        let item = {...file.fileList[i].response}
+        fileLists.push({uid: file.fileList[i].uid, name: file.fileList[i].name, url: item.url, thumbUrl: item.thumbUrl, status: item.status})
+      }
+      this.fileList = fileLists
+      console.log(this.fileList)
     },
     handleSubmit(e) {
+      let _this = this
       e.preventDefault()
       this.form.validateFieldsAndScroll((err, values) => {
         if (!err) {
+          if (this.account.action === 'edit') {
+                 modifyProduct(values).then((res) => {
+                   _this.$message.success('修改成功');   
+                   this.visible = false
+                    this.$emit('refresh')
+                 })
+               } else {
+           addOne(values).then((res) => {
+             if (res.success === true) {
+               
+               _this.$message.success('添加成功');   
+               this.visible = false
+               this.$emit('refresh')
+             }
+           })
+           }
           console.log('Received values of form: ', values)
         }
       })
@@ -440,6 +421,7 @@ export default {
     },
     edit(obj) {
       this.visible = true
+      this.account = obj
       console.log(obj)
     },
     handleWebsiteChange(value) {
@@ -458,7 +440,7 @@ export default {
   /* tile uploaded pictures */
   .upload-list-inline >>> .ant-upload-list-item {
     float: left;
-    width: 120px;
+    width: 100px;
     margin-right: 8px;
   }
   .upload-list-inline >>> .ant-upload-animate-enter {

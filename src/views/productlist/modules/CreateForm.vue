@@ -63,7 +63,7 @@
                 />
               </a-form-item>
               <a-form-item v-bind="formItemLayout" label="邮箱地址">
-                <a-input-search placeholder="请输入邮箱地址" @search="onSearch" size="middle">
+                <a-input-search placeholder="请输入邮箱地址">
                   <a-button slot="enterButton">发送验证码</a-button>
                 </a-input-search>
               </a-form-item>
@@ -379,6 +379,9 @@ export default {
           this.confirmLoading = false
         }
       })
+    },
+    handleChange() {
+      console.log('11')
     },
     handleCancel () {
       this.visible = false

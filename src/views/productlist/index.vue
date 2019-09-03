@@ -1,5 +1,13 @@
 <template>
   <a-card :bordered="true">
+    <div class="table-operator">
+      <a-form layout="inline">
+        <a-row type="flex" justify="end" :gutter="10">
+            <a-col :offset="8"><a-button type="primary" icon="plus" @click="$refs.createModal.add()">新建</a-button></a-col>
+            <a-col><a-button type="primary" @click="del">删除</a-button></a-col>
+        </a-row>
+      </a-form>
+    </div>
     <s-table
       ref="table"
       size="default"
@@ -19,14 +27,7 @@
         </template>
       </span>
     </s-table>
-    <div class="table-operator">
-      <a-form layout="inline">
-        <a-row type="flex" justify="end" :gutter="10">
-            <a-col :offset="8"><a-button type="primary" icon="plus" @click="$refs.createModal.add()">新建</a-button></a-col>
-            <a-col><a-button type="primary" @click="del">删除</a-button></a-col>
-        </a-row>
-      </a-form>
-    </div>
+    
     <create-form ref="createModal" @ok="handleOk" />
   </a-card>
 </template>

@@ -2,17 +2,16 @@
 import { builder, getQueryParameters } from '../util'
 
 const totalCount = 5701
-
+const productCount = 30
+let result = []
+let productList = []
 const serverList = (options) => {
   const parameters = getQueryParameters(options)
-
-  const result = []
   const pageNo = parseInt(parameters.pageNo)
   const pageSize = parseInt(parameters.pageSize)
   const totalPage = Math.ceil(totalCount / pageSize)
   const key = (pageNo - 1) * pageSize
   const next = (pageNo >= totalPage ? (totalCount % pageSize) : pageSize) + 1
-
   for (let i = 1; i < next; i++) {
     const tmpKey = key + i
     result.push({
@@ -27,7 +26,6 @@ const serverList = (options) => {
       editable: false
     })
   }
-
   return builder({
     pageSize: pageSize,
     pageNo: pageNo,
@@ -37,6 +35,108 @@ const serverList = (options) => {
   })
 }
 
+const getProductList = (options) => {
+  const parameters = getQueryParameters(options)
+  const pageNo = parseInt(parameters.pageNo)
+  const pageSize = parseInt(parameters.pageSize)
+  const totalPage = Math.ceil(productCount / pageSize)
+  const key = (pageNo - 1) * pageSize
+  const next = (pageNo >= totalPage ? (totalCount % pageSize) : pageSize) + 1
+  for (let i = 1; i < next; i++) {
+    const tmpKey = key + i
+    productList.push({
+      key: tmpKey,
+      id: tmpKey,
+      auth: Mock.mock('@word'),
+    check: Mock.mock('@word'),
+    code: Mock.mock('@word'),
+    company: Mock.mock('@word'),
+    dayTime: Mock.mock('@word'),
+    description: Mock.mock('@word'),
+    eatMethod: Mock.mock('@word'),
+    endTime: Mock.mock('@word'),
+    grade: Mock.mock('@word'),
+    heart: Mock.mock('@word'),
+    name:Mock.mock('@word'),
+    shop: Mock.mock('@word'),
+    shopChannel: Mock.mock('@word'),
+    startTime: Mock.mock('@word'),
+    url: Mock.mock('@word'),
+    weight: Mock.mock('@word'),
+    })
+  }
+  console.log(productList)
+  return builder({
+    pageSize: pageSize,
+    pageNo: pageNo,
+    totalCount: totalCount,
+    totalPage: totalPage,
+    data: productList
+  })
+}
+
+const modifyProduct = (req) => {
+  const objParams = req.body
+  const params = JSON.parse(objParams)
+  console.log(params)
+  productList.some(u => {
+    if (u.id === params.id) {
+      u.auth= params.auth,
+      u.check= params.check,
+      u.code= params.code,
+      u.company= params.company,
+      u.dayTime= params.dayTime,
+      u.description= params.description,
+      u.eatMethod= params.eatMethod,
+      u.endTime= params.endTime,
+      u.grade=params.grade,
+      u.heart= params.heart,
+      u.name= params.name,
+      u.shop= params.shop,
+      u.shopChannel= params.shopChannel,
+      u.startTime= params.startTime,
+      u.url=params.url,
+      u.weight= params.weight
+      return true
+    }
+  })
+}
+const deleteOne = (options) => {
+  const parameters = getQueryParameters(options)
+  const id = Number(parameters.id)
+  result = result.filter(u => u.id !== id)
+  console.log(result)
+  return {
+    'success': true
+  }
+}
+
+const addOne = (req) => {
+  const objParams = req.body
+  const params = JSON.parse(objParams)
+  console.log(params)
+  productList.push({
+    auth: params.auth,
+    check: params.check,
+    code: params.code,
+    company: params.company,
+    dayTime: params.dayTime,
+    description: params.description,
+    eatMethod: params.eatMethod,
+    endTime: params.endTime,
+    grade: params.params,
+    heart: params.heart,
+    name: params.name,
+    shop: params.shop,
+    shopChannel: params.shopChannel,
+    startTime: params.startTime,
+    url: params.url,
+    weight: params.weight
+  })
+  return {
+    'success': true
+  }
+}
 const projects = () => {
   return builder({
     'data': [{
@@ -247,7 +347,11 @@ const radar = () => {
 }
 
 Mock.mock(/\/service/, 'get', serverList)
+Mock.mock(/\/product/, 'get', getProductList)
 Mock.mock(/\/list\/search\/projects/, 'get', projects)
 Mock.mock(/\/workplace\/activity/, 'get', activity)
 Mock.mock(/\/workplace\/teams/, 'get', teams)
 Mock.mock(/\/workplace\/radar/, 'get', radar)
+Mock.mock(/\/deleteOne/, 'get', deleteOne)
+Mock.mock(/\/addOne/, 'post', addOne)
+Mock.mock(/\/modifyProduct/, 'post', modifyProduct)
