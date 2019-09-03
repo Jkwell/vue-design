@@ -80,24 +80,25 @@ const modifyProduct = (req) => {
   const params = JSON.parse(objParams)
   console.log(params)
   productList.some(u => {
-    if (u.id === params.id) {
-      u.auth= params.auth,
-      u.check= params.check,
-      u.code= params.code,
-      u.company= params.company,
-      u.dayTime= params.dayTime,
-      u.description= params.description,
-      u.eatMethod= params.eatMethod,
-      u.endTime= params.endTime,
-      u.grade=params.grade,
-      u.heart= params.heart,
-      u.name= params.name,
-      u.shop= params.shop,
-      u.shopChannel= params.shopChannel,
-      u.startTime= params.startTime,
-      u.url=params.url,
-      u.weight= params.weight
-      return true
+    if (u.key === params.key) {
+      console.log('333')
+      // u.auth= params.auth,
+      // u.check= params.check,
+      // u.code= params.code,
+      // u.company= params.company,
+      // u.dayTime= params.dayTime,
+      // u.description= params.description,
+      // u.eatMethod= params.eatMethod,
+      // u.endTime= params.endTime,
+      // u.grade=params.grade,
+      // u.heart= params.heart,
+      // u.name= params.name,
+      // u.shop= params.shop,
+      // u.shopChannel= params.shopChannel,
+      // u.startTime= params.startTime,
+      // u.url=params.url,
+      // u.weight= params.weight
+      // return true
     }
   })
 }
@@ -116,6 +117,7 @@ const addOne = (req) => {
   const params = JSON.parse(objParams)
   console.log(params)
   productList.push({
+    key: Mock.mock('@guid'),
     auth: params.auth,
     check: params.check,
     code: params.code,
