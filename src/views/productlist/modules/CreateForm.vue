@@ -25,9 +25,9 @@
                   ]"
                 />
               </a-form-item>
-              <!-- <a-form-item v-bind="formItemLayout" label="单位地址">
-                <area-select v-model="selected2" :data="$pcaa" :level="3"></area-select>
-              </a-form-item> -->
+              <a-form-item v-bind="formItemLayout" label="单位地址">
+                <area-select v-model="selected" @change="cityChange" :data="$pcaa" :level="3"></area-select>
+              </a-form-item>
               <a-form-item v-bind="formItemLayout" label="联系人">
                 <a-input
                   v-decorator="[
@@ -57,8 +57,8 @@
                 />
               </a-form-item>
               <a-form-item v-bind="formItemLayout" label="邮箱地址">
-                <a-input-search placeholder="请输入邮箱地址">
-                  <a-button slot="enterButton">发送验证码</a-button>
+                <a-input-search placeholder="请输入邮箱地址" @search="onSearch" >
+                  <a-button slot="enterButton" :disabled="disabled">{{vertifyCode}}</a-button>
                 </a-input-search>
               </a-form-item>
               <a-form-item v-bind="formItemLayout" label="输入验证码">
@@ -344,6 +344,7 @@ export default {
       confirmLoading: false,
       provinceData,
       cityData,
+      selected: [],
       cities: cityData[provinceData[0]],
       secondCity: cityData[provinceData[0]][0],
       confirmDirty: false,
@@ -354,7 +355,9 @@ export default {
       placeItems: [],
       placeValues: [],
       specialServices: [],
+      disabled: false,
       specailValues: [],
+      vertifyCode: '发送验证码',
       formItemLayout: {
         labelCol: {
           xs: { span: 24 },
@@ -383,6 +386,34 @@ export default {
   methods: {
     add () {
       this.visible = true
+    },
+    onSearch(value) {
+        console.log(value)
+        if (value === undefined || value === '') {
+          this.$warning({
+          title: '提示',
+          content: '请输入邮箱地址!',
+        });
+        return false
+        }
+        let flag = true
+        if (flag) {
+          let time = 4;
+          let timer = setInterval(() => {
+          if(time == 0) {
+            flag = true
+            clearInterval(timer);
+            this.disabled = false;
+            this.vertifyCode = "获取验证码";
+          } else {
+            flag = false
+            this.vertifyCode =time + '秒后重试';
+            this.disabled = true;
+            time--
+          }
+      },1000)
+        }
+        
     },
     enter(e) {
       console.log(e)
@@ -433,6 +464,9 @@ export default {
         this.showSpecail = true
         this.form.resetFields(['service'])
       }
+    },
+    cityChange(e) {
+      console.log(e)
     },
     handleSubmit () {
       const { form: { validateFields } } = this
