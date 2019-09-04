@@ -398,7 +398,7 @@ export default {
         }
         let flag = true
         if (flag) {
-          let time = 4;
+          let time = 60;
           let timer = setInterval(() => {
           if(time == 0) {
             flag = true
