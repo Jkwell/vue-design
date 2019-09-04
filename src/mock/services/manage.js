@@ -22,7 +22,7 @@ const serverList = (options) => {
       account: Mock.mock('@guid'),
       shopInfo: Mock.mock('@word'),
       status: Mock.mock('@boolean'),
-      productList: Mock.mock('@sentence'),
+      productLists: Mock.mock('@sentence'),
       editable: false
     })
   }
@@ -48,24 +48,23 @@ const getProductList = (options) => {
       key: tmpKey,
       id: tmpKey,
       auth: Mock.mock('@word'),
-    check: Mock.mock('@word'),
-    code: Mock.mock('@word'),
-    company: Mock.mock('@word'),
-    dayTime: Mock.mock('@word'),
-    description: Mock.mock('@word'),
-    eatMethod: Mock.mock('@word'),
-    endTime: Mock.mock('@word'),
-    grade: Mock.mock('@word'),
-    heart: Mock.mock('@word'),
-    name:Mock.mock('@word'),
-    shop: Mock.mock('@word'),
-    shopChannel: Mock.mock('@word'),
-    startTime: Mock.mock('@word'),
-    url: Mock.mock('@word'),
-    weight: Mock.mock('@word'),
+      check: Mock.mock('@word'),
+      code: Mock.mock('@word'),
+      company: Mock.mock('@word'),
+      dayTime: Mock.mock('@word'),
+      description: Mock.mock('@word'),
+      eatMethod: Mock.mock('@word'),
+      endTime: Mock.mock('@word'),
+      grade: Mock.mock('@word'),
+      heart: Mock.mock('@word'),
+      name: Mock.mock('@word'),
+      shop: Mock.mock('@word'),
+      shopChannel: Mock.mock('@word'),
+      startTime: Mock.mock('@word'),
+      url: Mock.mock('@word'),
+      weight: Mock.mock('@word'),
     })
   }
-  console.log(productList)
   return builder({
     pageSize: pageSize,
     pageNo: pageNo,
@@ -78,15 +77,13 @@ const getProductList = (options) => {
 const modifyProduct = (req) => {
   const objParams = req.body
   const params = JSON.parse(objParams)
-  
   productList.some(u => {
     if (u.id === params.id) {
-      console.log('zhengque')
-      u.auth= params.auth,
-      u.check= params.check,
-      u.code= params.code,
-      u.company= params.company,
-      u.dayTime= params.dayTime,
+      u.auth = params.auth,
+      u.check = params.check,
+      u.code = params.code,
+      u.compony = params.company,
+      u.dayTime = params.dayTime,
       u.description= params.description,
       u.eatMethod= params.eatMethod,
       u.endTime= params.endTime,
@@ -101,7 +98,6 @@ const modifyProduct = (req) => {
       return true
     }
   })
-  console.log(productList)
   return {
     'success': true
   }

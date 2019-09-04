@@ -158,13 +158,7 @@
           :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
           :required="false"
         >
-          <a-textarea
-          rows="4"
-          placeholder="请输入产品介绍"
-          v-decorator="[
-            'description',
-            {initialValue: account && account.description, rules: [{ required: true, message: '请输入产品介绍' }]}
-          ]" />
+          <tinymce-editor :value="value"></tinymce-editor>
         </a-form-item>
         
         <a-form-item
@@ -281,11 +275,15 @@
 
 <script>
 import moment from 'moment'
+import tinymceEditor from '../tinymce'
 import { addOne, modifyProduct} from '@/api/manage'
 export default {
   props: {
     account: Object
   }, 
+  components: {
+    tinymceEditor
+  },
   data () {
     return {
       labelCol: {
@@ -298,6 +296,7 @@ export default {
       },
       fileList: [],
       visible: false,
+      value: '',
       previewVisible: false,
       previewImage: '',
       confirmLoading: false,
