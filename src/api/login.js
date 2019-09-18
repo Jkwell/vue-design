@@ -1,6 +1,5 @@
 import api from './index'
 import { axios } from '@/utils/request'
-const BASE_URL = 'http://47.111.67.221:5000'
 /**
  * login func
  * parameter: {
@@ -14,7 +13,7 @@ const BASE_URL = 'http://47.111.67.221:5000'
  */
 export function login (parameter) {
   return axios({
-    url: BASE_URL + '/connect/token',
+    url: '/connect/token',
     method: 'post',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'

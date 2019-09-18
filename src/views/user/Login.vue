@@ -189,7 +189,7 @@ export default {
         if (!err) {
           
           console.log('login form', values)
-          const loginParams = { ...values }
+          let loginParams = { ...values }
           delete loginParams.username
           loginParams[!state.loginType ? 'email' : 'username'] = values.username
           // loginParams.password = md5(values.password)
