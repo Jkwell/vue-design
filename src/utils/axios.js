@@ -2,11 +2,13 @@ const VueAxios = {
   vm: {},
   // eslint-disable-next-line no-unused-vars
   install (Vue, instance) {
+    console.log(instance)
     if (this.installed) {
+      console.log('ss')
       return
     }
     this.installed = true
-
+    console.log('ss')
     if (!instance) {
       // eslint-disable-next-line no-console
       console.error('You have to install axios')

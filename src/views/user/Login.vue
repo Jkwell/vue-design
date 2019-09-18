@@ -187,11 +187,33 @@ export default {
 
       validateFields(validateFieldsKey, { force: true }, (err, values) => {
         if (!err) {
+          
           console.log('login form', values)
           const loginParams = { ...values }
           delete loginParams.username
           loginParams[!state.loginType ? 'email' : 'username'] = values.username
-          loginParams.password = md5(values.password)
+          // loginParams.password = md5(values.password)
+          console.log(loginParams)
+          loginParams = {
+						grant_type: 'password',
+						client_id: 'hwai',
+						client_secret: 'HwAi',
+						username: values.username,
+						password: values.password,
+						tenant: '',
+						tenantName: '',
+						mobileVerifyCode: '',
+					}
+          // {
+					// 	grant_type: 'password',
+					// 	client_id: 'hwai',
+					// 	client_secret: 'HwAi',
+					// 	username: this.phoneData,
+					// 	password: this.passData,
+					// 	tenant: '',
+					// 	tenantName: this.tenantName,
+					// 	mobileVerifyCode: '',
+					// }
           Login(loginParams)
             .then((res) => this.loginSuccess(res))
             .catch(err => this.requestFailed(err))

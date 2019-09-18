@@ -37,7 +37,7 @@ import moment from 'moment'
 import { STable, Ellipsis } from '@/components'
 import StepByStepModal from './modules/StepByStepModal'
 import CreateForm from './modules/CreateForm'
-import { getRoleList, getServiceList } from '@/api/manage'
+import { getRoleList, getFarmList, getFarmTotal } from '@/api/manage'
 
 export default {
   name: 'TableList',
@@ -55,6 +55,7 @@ export default {
     //   advanced: false,
       // 查询参数
       queryParam: {},
+      total: 0,
       // 表头
       columns: [  
         {
@@ -92,10 +93,7 @@ export default {
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         console.log('loadData.parameter', parameter)
-        return getServiceList(Object.assign(parameter, this.queryParam))
-          .then(res => {
-            return res.result
-          })
+        return getFarmList(Object.assign(parameter, this.queryParam))
       },
       selectedRowKeys: [],
       selectedRows: [],
@@ -111,6 +109,9 @@ export default {
   },
   created () {
     this.tableOption()
+    getFarmTotal({id: 1}).then((res) => {
+      console.log(res)
+    }) 
   },
   methods: {
     tableOption () {

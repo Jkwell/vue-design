@@ -5,7 +5,7 @@
         <a-list itemLayout="vertical" :dataSource="roles">
           <a-list-item slot="renderItem" slot-scope="item, index" :key="index">
             <a-list-item-meta :style="{ marginBottom: '0' }">
-              <span slot="description" style="text-align: center; display: block">{{ item.describe }}</span>
+              <span slot="describe" style="text-align: center; display: block">{{ item.describe }}</span>
               <a slot="title" style="text-align: center; display: block" @click="edit(item)">{{ item.name }}</a>
             </a-list-item-meta>
           </a-list-item>
@@ -45,7 +45,6 @@
                 <a-col :xl="20" :lg="24">
                   <a-checkbox
                     v-if="permission.actionsOptions.length > 0"
-                    :indeterminate="permission.indeterminate"
                     :checked="permission.checkedAll"
                     @change="onChangeCheckAll($event, permission)">
                     全选
@@ -84,6 +83,7 @@ export default {
   created () {
     getRoleList().then((res) => {
       this.roles = res.result.data
+      console.log(this.roles)
       this.roles.push({
         id: '-1',
         name: '新增角色',
@@ -103,6 +103,7 @@ export default {
     },
 
     edit (record) {
+      console.log(record)
       this.mdl = Object.assign({}, record)
       // 有权限表，处理勾选
       if (this.mdl.permissions && this.permissions) {
@@ -117,6 +118,7 @@ export default {
         this.permissions.forEach(permission => {
           const selected = permissionsAction[permission.id]
           permission.selected = selected || []
+          console.log(permission)
           this.onChangeCheck(permission)
         })
 
@@ -145,6 +147,7 @@ export default {
     loadPermissions () {
       getPermissions().then(res => {
         const result = res.result
+        console.log(result)
         this.permissions = result.map(permission => {
           const options = actionToObject(permission.actionData)
           permission.checkedAll = false
@@ -158,6 +161,7 @@ export default {
           })
           return permission
         })
+        console.log(this.permissions)
       })
     }
   }

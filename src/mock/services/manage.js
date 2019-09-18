@@ -48,6 +48,7 @@ const getProductList = (options) => {
       key: tmpKey,
       id: tmpKey,
       auth: Mock.mock('@word'),
+      detail: '预览详情',
       check: Mock.mock('@word'),
       code: Mock.mock('@word'),
       company: Mock.mock('@word'),
