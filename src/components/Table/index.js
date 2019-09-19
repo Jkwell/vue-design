@@ -1,15 +1,16 @@
 ﻿import T from 'ant-design-vue/es/table/Table'
 import get from 'lodash.get'
+import { getFarmTotal } from '@/api/manage'
 
 export default {
   data () {
     return {
       needTotalList: [],
-
       selectedRows: [],
       selectedRowKeys: [],
       localLoading: false,
       localDataSource: [],
+      total: 0,
       localPagination: Object.assign({}, this.pagination)
     }
   },
@@ -26,13 +27,13 @@ export default {
       type: Number,
       default: 1
     },
-    pageSize: {
+    PageSize: {
       type: Number,
-      default: 10
+      default: 3
     },
     showSizeChanger: {
       type: Boolean,
-      default: true
+      default: false
     },
     size: {
       type: String,
@@ -47,10 +48,6 @@ export default {
     alert: {
       type: [Object, Boolean],
       default: null
-    },
-    total: {
-      type: Number,
-      default: 0
     },
     rowSelection: {
       type: Object,
@@ -81,11 +78,12 @@ export default {
   }),
   watch: {
     'localPagination.current' (val) {
+      console.log(val)
       this.pageURI && this.$router.push({
         ...this.$route,
         name: this.$route.name,
         params: Object.assign({}, this.$route.params, {
-          pageNo: val
+          PageIndex: val
         })
       })
     },
@@ -96,7 +94,7 @@ export default {
     },
     pageSize (val) {
       Object.assign(this.localPagination, {
-        pageSize: val
+        PageSize: val
       })
     },
     showSizeChanger (val) {
@@ -106,17 +104,24 @@ export default {
     }
   },
   created () {
-    const { pageNo } = this.$route.params
-    const localPageNum = this.pageURI && (pageNo && parseInt(pageNo)) || this.pageNum
+    console.log(this.localPagination)
+    console.log(this.$route)
+    const { PageIndex } = this.$route.params
+    console.log(PageIndex)
+    const localPageNum = this.pageURI && (PageIndex && parseInt(PageIndex)) || this.pageNum
+    console.log(localPageNum)
     this.localPagination = ['auto', true].includes(this.showPagination) && Object.assign({}, this.localPagination, {
       current: localPageNum,
-      pageSize: this.pageSize,
+      PageSize: this.PageSize,
       showSizeChanger: this.showSizeChanger
     }) || false
     console.log('this.localPagination', this.localPagination)
     console.log(this.columns)
     this.needTotalList = this.initTotalList(this.columns)
-    this.loadData()
+    getFarmTotal().then((res) => {
+      this.total = res
+      this.loadData()
+    })
   },
   methods: {
     /**
@@ -126,7 +131,7 @@ export default {
      */
     refresh (bool = false) {
       bool && (this.localPagination = Object.assign({}, {
-        current: 1, pageSize: this.pageSize
+        current: 1, PageSize: this.PageSize
       }))
       this.loadData()
     },
@@ -139,10 +144,10 @@ export default {
     loadData (pagination, filters, sorter) {
       this.localLoading = true
       const parameter = Object.assign({
-        pageNo: (pagination && pagination.current) ||
+        PageIndex: (pagination && pagination.current) ||
           this.showPagination && this.localPagination.current || this.pageNum,
-        pageSize: (pagination && pagination.pageSize) ||
-          this.showPagination && this.localPagination.pageSize || this.pageSize
+        PageSize: (pagination && pagination.PageSize) ||
+          this.showPagination && this.localPagination.PageSize || this.PageSize
       },
       (sorter && sorter.field && {
         sortField: sorter.field
@@ -153,6 +158,7 @@ export default {
         ...filters
       }
       )
+      console.log(this.total)
       console.log('parameter', parameter)
       const result = this.data(parameter)
       console.log(result)
@@ -161,11 +167,12 @@ export default {
       if ((typeof result === 'object' || typeof result === 'function') && typeof result.then === 'function') {
         result.then(r => {
           this.localPagination = this.showPagination && Object.assign({}, this.localPagination, {
-            current: 1, // 返回结果中的当前分页数
+            current: parameter.PageIndex, // 返回结果中的当前分页数
             // total: r.totalCount, // 返回结果中的总记录数
+            total: this.total,
             showSizeChanger: this.showSizeChanger,
-            pageSize: (pagination && pagination.pageSize) ||
-              this.localPagination.pageSize
+            PageSize: (pagination && pagination.PageSize) ||
+              this.localPagination.PageSize
           }) || false
           // 为防止删除数据后导致页面当前页面数据长度为 0 ,自动翻页到上一页
           console.log(r)
@@ -177,15 +184,15 @@ export default {
 
           // 这里用于判断接口是否有返回 r.totalCount 且 this.showPagination = true 且 pageNo 和 pageSize 存在 且 totalCount 小于等于 pageNo * pageSize 的大小
           // 当情况满足时，表示数据不满足分页大小，关闭 table 分页功能
-          // try {
-          //   if ((['auto', true].includes(this.showPagination) && r.totalCount <= (r.pageNo * this.localPagination.pageSize))) {
-          //     this.localPagination.hideOnSinglePage = true
-          //   }
-          // } catch (e) {
-          //   this.localPagination = false
-          // }
+          try {
+            if ((['auto', true].includes(this.showPagination) && this.total <= (parameter.PageIndex * this.localPagination.PageSize))) {
+              this.localPagination.hideOnSinglePage = true
+            }
+          } catch (e) {
+            this.localPagination = false
+          }
           console.log('loadData -> this.localPagination', this.localPagination)
-          this.localDataSource = r.data // 返回结果中的数组数据
+          this.localDataSource = r // 返回结果中的数组数据
           this.localLoading = false
         })
       }
@@ -306,6 +313,7 @@ export default {
       this[k] && (props[k] = this[k])
       return props[k]
     })
+    console.log(props)
     const table = (
       <a-table {...{ props, scopedSlots: { ...this.$scopedSlots } }} onChange={this.loadData}>
         { Object.keys(this.$slots).map(name => (<template slot={name}>{this.$slots[name]}</template>)) }

@@ -37,7 +37,7 @@ import moment from 'moment'
 import { STable, Ellipsis } from '@/components'
 import StepByStepModal from './modules/StepByStepModal'
 import CreateForm from './modules/CreateForm'
-import {getFarmList, getFarmTotal } from '@/api/manage'
+import {getFarmList } from '@/api/manage'
 
 export default {
   name: 'TableList',
@@ -55,7 +55,6 @@ export default {
     //   advanced: false,
       // 查询参数
       queryParam: {},
-      total: 0,
       // 表头
       columns: [  
         {
@@ -109,9 +108,6 @@ export default {
   },
   created () {
     this.tableOption()
-    getFarmTotal({id: 1}).then((res) => {
-      console.log(res)
-    }) 
   },
   methods: {
     tableOption () {

@@ -27,13 +27,13 @@ const err = (error) => {
         message: 'Unauthorized',
         description: 'Authorization verification failed'
       })
-      // if (token) {
-      //   store.dispatch('Logout').then(() => {
-      //     setTimeout(() => {
-      //       window.location.reload()
-      //     }, 1500)
-      //   })
-      // }
+      if (token) {
+        store.dispatch('Logout').then(() => {
+          setTimeout(() => {
+            window.location.reload()
+          }, 1500)
+        })
+      }
     }
   }
   return Promise.reject(error)

@@ -2,8 +2,8 @@ import { axios } from '@/utils/request'
 
 const BASE_URL = 'http://47.111.67.221:10000/APSSServer'
 const api = {
-  farm: BASE_URL + '/api/FarmInfor/List',
-  farmTotal: BASE_URL + '/api/AgriculturalProduct/ByFarmInforId/total',
+  farm: BASE_URL + '/api/FarmInfor/List/Paginated',
+  farmTotal: BASE_URL + '/api/FarmInfor/Homepage/total',
   user: '/user',
   role: '/role',
   service: '/service',
