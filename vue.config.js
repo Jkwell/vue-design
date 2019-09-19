@@ -60,6 +60,11 @@ const vueConfig = {
         target: 'http://47.111.67.221:5000',
         changeOrigin: true,
         pathRewrite: { '^/connect': '/connect' }
+      },
+      '/UserIdentity': {
+        target: 'http://47.111.67.221:10000',
+        changeOrigin: true,
+        pathRewrite: { '^/UserIdentity': '/UserIdentity' }
       }
     }
   },

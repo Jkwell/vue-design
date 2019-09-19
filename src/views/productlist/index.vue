@@ -37,7 +37,7 @@ import moment from 'moment'
 import { STable, Ellipsis } from '@/components'
 import StepByStepModal from './modules/StepByStepModal'
 import CreateForm from './modules/CreateForm'
-import { getRoleList, getFarmList, getFarmTotal } from '@/api/manage'
+import {getFarmList, getFarmTotal } from '@/api/manage'
 
 export default {
   name: 'TableList',

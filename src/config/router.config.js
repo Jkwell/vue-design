@@ -17,19 +17,19 @@ export const asyncRouterMap = [
         name: 'productlist',
         redirect: '/productlist',
         component: RouteView,
-        meta: { title: '农产品', keepAlive: true, icon: bxAnaalyse, permission: [ 'form' ] },
+        meta: { title: '农产品', keepAlive: true, icon: bxAnaalyse },
         children: [
           {
             path: '/productlist/index',
             name: 'index',
             component: () => import('@/views/productlist/index'),
-            meta: { title: '首页', keepAlive: false, permission: [ 'form' ] }
+            meta: { title: '首页', keepAlive: false }
           },
           {
             path: '/productlist/list',
             name: 'list',
             component: () => import('@/views/productlist/list'),
-            meta: { title: '农产品列表', keepAlive: false, permission: [ 'form' ] }
+            meta: { title: '农产品列表', keepAlive: false }
           },
           {
             path: '/productlist/tinymce',
@@ -43,7 +43,7 @@ export const asyncRouterMap = [
       {
         path: '/dashboard',
         name: 'dashboard',
-        redirect: '/dashboard/workplace',
+        redirect: '/dashboard',
         component: RouteView,
         meta: { title: '仪表盘', keepAlive: true, icon: bxAnaalyse, permission: [ 'dashboard' ] },
         children: [

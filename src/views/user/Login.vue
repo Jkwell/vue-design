@@ -117,6 +117,7 @@
 
 <script>
 import md5 from 'md5'
+import qs from 'qs'
 import TwoStepCaptcha from '@/components/tools/TwoStepCaptcha'
 import { mapActions } from 'vuex'
 import { timeFix } from '@/utils/util'
@@ -203,7 +204,8 @@ export default {
 						tenant: '',
 						tenantName: '',
 						mobileVerifyCode: '',
-					}
+          }
+          var QSparams = qs.stringify(loginParams)
           // {
 					// 	grant_type: 'password',
 					// 	client_id: 'hwai',
@@ -214,8 +216,8 @@ export default {
 					// 	tenantName: this.tenantName,
 					// 	mobileVerifyCode: '',
 					// }
-          Login(loginParams)
-            .then((res) => this.loginSuccess(res))
+          Login(QSparams)
+            .then((res) => {this.loginSuccess(res)})
             .catch(err => this.requestFailed(err))
             .finally(() => {
               state.loginBtn = false
@@ -272,7 +274,8 @@ export default {
     },
     loginSuccess (res) {
       console.log(res)
-      this.$router.push({ name: 'dashboard' })
+      console.log(this.$router)
+      this.$router.push({ path: '/productlist/index' })
       this.isLoginError = false
       // 延迟 1 秒显示欢迎信息
       setTimeout(() => {

@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import qs from 'qs'
 import { login, getInfo, logout } from '@/api/login'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { welcome } from '@/utils/util'
@@ -38,10 +39,9 @@ const user = {
       return new Promise((resolve, reject) => {
         login(userInfo).then(response => {
           console.log(response)
-          const result = response.result
-          Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
-          commit('SET_TOKEN', result.token)
-          resolve()
+          Vue.ls.set(ACCESS_TOKEN, response.access_token, 7 * 24 * 60 * 60 * 1000)
+          commit('SET_TOKEN', response.access_token)
+          resolve(response)
         }).catch(error => {
           reject(error)
         })
@@ -52,10 +52,13 @@ const user = {
     GetInfo ({ commit }) {
       return new Promise((resolve, reject) => {
         getInfo().then(response => {
-          const result = response.result
-
+          // const result = response
+          console.log(typeof response)
+          var resPonse = qs.parse(response)
+          const result = resPonse.result
           if (result.role && result.role.permissions.length > 0) {
             const role = result.role
+            console.log(role)
             role.permissions = result.role.permissions
             role.permissions.map(per => {
               if (per.actionEntitySet != null && per.actionEntitySet.length > 0) {
