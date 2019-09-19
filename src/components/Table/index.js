@@ -29,11 +29,11 @@ export default {
     },
     PageSize: {
       type: Number,
-      default: 3
+      default: 10
     },
     showSizeChanger: {
       type: Boolean,
-      default: false
+      default: true
     },
     size: {
       type: String,
@@ -79,7 +79,14 @@ export default {
   watch: {
     'localPagination.current' (val) {
       console.log(val)
-      this.pageURI && this.$router.push({
+      // this.pageURI && this.$router.push({
+      //   ...this.$route,
+      //   name: this.$route.name,
+      //   params: Object.assign({}, this.$route.params, {
+      //     PageIndex: val
+      //   })
+      // })
+      this.$router.push({
         ...this.$route,
         name: this.$route.name,
         params: Object.assign({}, this.$route.params, {
@@ -87,17 +94,21 @@ export default {
         })
       })
     },
-    pageNum (val) {
-      Object.assign(this.localPagination, {
-        current: val
-      })
+    pageNum (old, newValue) {
+      console.log(old)
+      console.log(newValue)
+      // Object.assign(this.localPagination, {
+      //   current: val
+      // })
     },
-    pageSize (val) {
+    PageSize (val) {
+      console.log(val)
       Object.assign(this.localPagination, {
         PageSize: val
       })
     },
     showSizeChanger (val) {
+      console.log(val)
       Object.assign(this.localPagination, {
         showSizeChanger: val
       })
@@ -175,7 +186,7 @@ export default {
               this.localPagination.PageSize
           }) || false
           // 为防止删除数据后导致页面当前页面数据长度为 0 ,自动翻页到上一页
-          console.log(r)
+          console.log([...r, ...r].length)
           if (r.length === 0 && this.showPagination && this.localPagination.current > 1) {
             this.localPagination.current--
             this.loadData()
@@ -193,6 +204,7 @@ export default {
           }
           console.log('loadData -> this.localPagination', this.localPagination)
           this.localDataSource = r // 返回结果中的数组数据
+          console.log(this.localDataSource)
           this.localLoading = false
         })
       }
