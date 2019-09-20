@@ -7,7 +7,8 @@ const api = {
   user: '/user',
   role: '/role',
   service: '/service',
-  product: '/product',
+  productTotal: BASE_URL + '/api/AgriculturalProduct/ByFarmInforId/total',
+  product: BASE_URL + '/api/AgriculturalProduct/ByFarmInforId/',
   permission: '/permission',
   permissionNoPager: '/permission/no-pager',
   orgTree: '/org/tree',
@@ -80,8 +81,15 @@ export function getServiceList (parameter) {
 }
 
 export function getProductList (parameter) {
+  console.log(parameter)
   return axios({
-    url: api.product,
+    url: api.product + parameter.id,
+    method: 'get'
+  })
+}
+export function getProductTotal (parameter) {
+  return axios({
+    url: api.productTotal,
     method: 'get',
     params: parameter
   })

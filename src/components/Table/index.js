@@ -1,6 +1,5 @@
 ﻿import T from 'ant-design-vue/es/table/Table'
 import get from 'lodash.get'
-import { getFarmTotal } from '@/api/manage'
 
 export default {
   data () {
@@ -11,6 +10,7 @@ export default {
       localLoading: false,
       localDataSource: [],
       total: 0,
+      productId: 0,
       localPagination: Object.assign({}, this.pagination)
     }
   },
@@ -23,11 +23,17 @@ export default {
       type: Function,
       required: true
     },
+    getProductTotals: {
+      type: Function
+    },
+    getFarmTotals: {
+      type: Function
+    },
     pageNum: {
       type: Number,
       default: 1
     },
-    PageSize: {
+    pageSize: {
       type: Number,
       default: 10
     },
@@ -62,6 +68,12 @@ export default {
       type: String | Boolean,
       default: 'auto'
     },
+    productShow: {
+      type: Boolean
+    },
+    farmShow: {
+      type: Boolean
+    },
     /**
      * enable page URI mode
      *
@@ -94,17 +106,16 @@ export default {
         })
       })
     },
-    pageNum (old, newValue) {
-      console.log(old)
-      console.log(newValue)
+    pageNum (val) {
+      console.log(val)
       // Object.assign(this.localPagination, {
       //   current: val
       // })
     },
-    PageSize (val) {
+    pageSize (val) {
       console.log(val)
       Object.assign(this.localPagination, {
-        PageSize: val
+        pageSize: val
       })
     },
     showSizeChanger (val) {
@@ -118,21 +129,40 @@ export default {
     console.log(this.localPagination)
     console.log(this.$route)
     const { PageIndex } = this.$route.params
+    if (this.productShow) {
+      this.getProductTotals().then((res) => {
+        this.total = res
+        this.loadData()
+      })
+    }
     console.log(PageIndex)
     const localPageNum = this.pageURI && (PageIndex && parseInt(PageIndex)) || this.pageNum
     console.log(localPageNum)
     this.localPagination = ['auto', true].includes(this.showPagination) && Object.assign({}, this.localPagination, {
       current: localPageNum,
-      PageSize: this.PageSize,
+      pageSize: this.pageSize,
       showSizeChanger: this.showSizeChanger
     }) || false
     console.log('this.localPagination', this.localPagination)
     console.log(this.columns)
     this.needTotalList = this.initTotalList(this.columns)
-    getFarmTotal().then((res) => {
-      this.total = res
-      this.loadData()
-    })
+    if (this.farmShow) {
+      this.getFarmTotals().then((res) => {
+        console.log(res)
+        this.total = res
+        this.loadData()
+      })
+    }
+    // getFarmTotal().then((res) => {
+    //   this.total = res
+    //   this.loadData()
+    // })
+  },
+  activated () {
+    this.productId = this.$route.query.productId
+    console.log(this.id)
+    console.log(this.productId)
+    this.loadData()
   },
   methods: {
     /**
@@ -142,7 +172,7 @@ export default {
      */
     refresh (bool = false) {
       bool && (this.localPagination = Object.assign({}, {
-        current: 1, PageSize: this.PageSize
+        current: 1, pageSize: this.pageSize
       }))
       this.loadData()
     },
@@ -154,11 +184,12 @@ export default {
      */
     loadData (pagination, filters, sorter) {
       this.localLoading = true
+      console.log(this.localPagination)
       const parameter = Object.assign({
         PageIndex: (pagination && pagination.current) ||
           this.showPagination && this.localPagination.current || this.pageNum,
-        PageSize: (pagination && pagination.PageSize) ||
-          this.showPagination && this.localPagination.PageSize || this.PageSize
+        PageSize: (pagination && pagination.pageSize) ||
+          this.showPagination && this.localPagination.pageSize || this.pageSize
       },
       (sorter && sorter.field && {
         sortField: sorter.field
@@ -169,9 +200,17 @@ export default {
         ...filters
       }
       )
+      console.log(this.productId)
+      if (this.productShow) {
+        var parameters = Object.assign(parameter, this.queryParam, { id: this.productId })
+        console.log(parameters)
+        var result = this.data(parameters)
+      } else {
+        result = this.data(parameter)
+      }
+      console.log(this.$route.query.id)
       console.log(this.total)
-      console.log('parameter', parameter)
-      const result = this.data(parameter)
+      console.log('parameter', parameters)
       console.log(result)
       // 对接自己的通用数据接口需要修改下方代码中的 r.pageNo, r.totalCount, r.data
       // eslint-disable-next-line
@@ -182,11 +221,10 @@ export default {
             // total: r.totalCount, // 返回结果中的总记录数
             total: this.total,
             showSizeChanger: this.showSizeChanger,
-            PageSize: (pagination && pagination.PageSize) ||
-              this.localPagination.PageSize
+            pageSize: (pagination && pagination.pageSize) ||
+              this.localPagination.pageSize
           }) || false
           // 为防止删除数据后导致页面当前页面数据长度为 0 ,自动翻页到上一页
-          console.log([...r, ...r].length)
           if (r.length === 0 && this.showPagination && this.localPagination.current > 1) {
             this.localPagination.current--
             this.loadData()
@@ -196,7 +234,7 @@ export default {
           // 这里用于判断接口是否有返回 r.totalCount 且 this.showPagination = true 且 pageNo 和 pageSize 存在 且 totalCount 小于等于 pageNo * pageSize 的大小
           // 当情况满足时，表示数据不满足分页大小，关闭 table 分页功能
           try {
-            if ((['auto', true].includes(this.showPagination) && this.total <= (parameter.PageIndex * this.localPagination.PageSize))) {
+            if ((['auto', true].includes(this.showPagination) && this.total <= (parameter.PageIndex * this.localPagination.pageSize))) {
               this.localPagination.hideOnSinglePage = true
             }
           } catch (e) {
@@ -326,6 +364,9 @@ export default {
       return props[k]
     })
     console.log(props)
+    console.log(this.$slots)
+    console.log(this)
+    console.log({ ...this.$scopedSlots })
     const table = (
       <a-table {...{ props, scopedSlots: { ...this.$scopedSlots } }} onChange={this.loadData}>
         { Object.keys(this.$slots).map(name => (<template slot={name}>{this.$slots[name]}</template>)) }

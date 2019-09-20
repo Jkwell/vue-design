@@ -14,25 +14,21 @@
       rowKey="key"
       :columns="columns"
       :data="loadData"
-      :productShow="productShow"
-      :getProductTotals="total"
       :rowSelection="options.rowSelection"
       showPagination="auto"
     >
-      <span slot="detail" slot-scope="text, obj">
-        <a @click="handleCheck(obj)">{{text}}</a>
+      <span slot="status" slot-scope="text">
+        {{ text }}
       </span>
       <span slot="action" slot-scope="text, obj">
         <template>
-          <a-button type="default" @click="handleError" style="margin-bottom: 4px;margin-right: 6px">提示有错误信息</a-button>
-          <a-button type="default" @click="handleSuc" style="margin-bottom: 4px">通过审核</a-button>
-          <a-button type="default" @click="handleEdit(obj)" >编辑</a-button>
+          <a @click="handleEdit(obj)" style="margin-right: 6px">编辑</a>
+          <a @click="handleCheck(obj)">查看</a>
         </template>
       </span>
     </s-table>
     
-    <create-form ref="createModal" :account="currentAccount" @close="onModalClose" @refresh="refresh" @ok="handleOk" />
-    <create-detail ref="createDetail" @ok="handleOk" />
+    <create-form ref="createModal" @ok="handleOk" />
   </a-card>
 </template>
 
@@ -40,9 +36,8 @@
 import moment from 'moment'
 import { STable, Ellipsis } from '@/components'
 import StepByStepModal from './modules/StepByStepModal'
-import CreateForm from './modules/CreateProductForm'
-import CreateDetail from './modules/CreateProductDetail'
-import { getRoleList, getProductTotal, getProductList, deleteOne } from '@/api/manage'
+import CreateForm from './modules/CreateForm'
+import {getFarmList } from '@/api/manage'
 
 export default {
   name: 'TableList',
@@ -50,8 +45,7 @@ export default {
     STable,
     Ellipsis,
     CreateForm,
-    StepByStepModal,
-    CreateDetail
+    StepByStepModal
   },
   data () {
     return {
@@ -61,36 +55,44 @@ export default {
     //   advanced: false,
       // 查询参数
       queryParam: {},
-      productShow: true,
-      currentAccount: null,
-      id: '',
       // 表头
-      columns: [
-          
+      columns: [  
         {
-          title: '农产品名称',
+          title: '农场主名称',
           dataIndex: 'name'
         },
         
         {
-          title: '详情',
-          dataIndex: 'detail',
-          scopedSlots: { customRender: 'detail' }
+          title: '账号',
+          dataIndex: 'account',
+          scopedSlots: { customRender: 'account' }
+        },
+        {
+          title: '单位信息',
+          dataIndex: 'shopInfo',
+          needTotal: true,
+        },
+        {
+          title: '状态',
+          dataIndex: 'status',
+          scopedSlots: { customRender: 'status' }
+        },
+        {
+          title: '农场品列表',
+          dataIndex: 'productList',
+          scopedSlots: { customRender: 'productList' }
         },
         {
           title: '操作',
           dataIndex: 'action',
-          width: '280px',
+          width: '150px',
           scopedSlots: { customRender: 'action' }
         }
       ],
-      total: () => {
-        return getProductTotal()
-      },
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         console.log('loadData.parameter', parameter)
-        return getProductList(Object.assign(parameter, this.queryParam))
+        return getFarmList(Object.assign(parameter, this.queryParam))
       },
       selectedRowKeys: [],
       selectedRows: [],
@@ -104,25 +106,8 @@ export default {
       },
     }
   },
-  watch: {
-    $route(from, to) {
-      console.log(to)
-      if (from.fullPath === '/productlist/index') {
-        console.log('dd')
-      }
-    }
-  },
   created () {
-    var productid = this.$route
-    console.log('sfsdfsd')
-    console.log(productid)
-    console.log(this.total)
     this.tableOption()
-    
-  },
-  activated () {
-    this.id = this.$route.query.productId
-    console.log(this.id)
   },
   methods: {
     tableOption () {
@@ -139,10 +124,6 @@ export default {
           }
         }
     },
-    onModalClose() {
-      this.currentAccount = null
-      this.visible = false
-    },
     del() {
       let _this = this
       console.log(_this.selectedRowKeys)
@@ -155,15 +136,10 @@ export default {
         okType: 'primary',
         cancelText: '取消',
         onOk() {
-          if (_this.selectedRowKeys !== '' && _this.selectedRows !== '' && _this.selectedRowKeys !== undefined && _this.selectedRows !== undefined) {
-            const id = _this.selectedRows[0].id
-            const obj = {id: id}
-            deleteOne(obj).then(res => {
-              if (res.success === true) {
-                _this.$message.success('删除成功');   
-                _this.$refs.table.refresh(true);
-              }
-            })
+          if (_this.selectedRowKeys !== '' && _this.selectedRows !== '' && _this.selectedRowKeys !== undefined && _this.selectedRows !== undefined && _this.selectedRowKeys.length>0 && _this.selectedRows.length) {
+            console.log(_this.selectedRowKeys)
+            console.log(_this.selectedRows)
+            console.log('OK');
           }
         },
         onCancel() {
@@ -177,19 +153,12 @@ export default {
       });
       }
     },
-    refresh() {
-      console.log('ddd')
-      this.$refs.table.refresh(true);
-    },
     handleEdit (record) {
       console.log(record)
-      Object.assign(record, {action: 'edit'})
-      this.currentAccount = record
-      this.$refs.createModal.edit()
+      this.$refs.createModal.edit(record)
     },
-    handleCheck() {
-      console.log(this.$refs.createDetail)
-      this.$refs.createDetail.check()
+    handleCheck(record) {
+      this.$refs.createModal.check(record)
     },
     handleOk () {
       this.$refs.table.refresh()
@@ -198,17 +167,11 @@ export default {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
     },
-    handleError() {
-      this.$warning({
-        title: '提示',
-        content: '有违规信息请检查!',
-      });
+    toggleAdvanced () {
+      this.advanced = !this.advanced
     },
-    handleSuc() {
-      this.$success({
-        title: '提示',
-        content: '通过审核!',
-      });
+    add() {
+        console.log('dddddd')
     },
     resetSearchForm () {
       this.queryParam = {

@@ -14,16 +14,17 @@
       rowKey="key"
       :columns="columns"
       :data="loadData"
+      :getFarmTotals="total"
+      :farmShow ="farmShow"
       :rowSelection="options.rowSelection"
       showPagination="auto"
     >
-      <span slot="status" slot-scope="text">
-        {{ text }}
-      </span>
+      <a slot="productList" slot-scope="text, obj" @click="handleCheck(obj)">
+        查看农产品列表
+      </a>
       <span slot="action" slot-scope="text, obj">
         <template>
           <a @click="handleEdit(obj)" style="margin-right: 6px">编辑</a>
-          <a @click="handleCheck(obj)">查看</a>
         </template>
       </span>
     </s-table>
@@ -37,7 +38,7 @@ import moment from 'moment'
 import { STable, Ellipsis } from '@/components'
 import StepByStepModal from './modules/StepByStepModal'
 import CreateForm from './modules/CreateForm'
-import {getFarmList } from '@/api/manage'
+import {getFarmList, getFarmTotal } from '@/api/manage'
 
 export default {
   name: 'TableList',
@@ -51,6 +52,7 @@ export default {
     return {
       mdl: {},
       visible: false,
+      farmShow: true,
       // 高级搜索 展开/关闭
     //   advanced: false,
       // 查询参数
@@ -89,6 +91,9 @@ export default {
           scopedSlots: { customRender: 'action' }
         }
       ],
+      total: () => {
+        return getFarmTotal()
+      },
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         console.log('loadData.parameter', parameter)
@@ -110,6 +115,9 @@ export default {
     this.tableOption()
   },
   methods: {
+    changeShow(data) {
+      console.log(data)
+    },
     tableOption () {
         this.options = {
           rowSelection: {
@@ -158,7 +166,9 @@ export default {
       this.$refs.createModal.edit(record)
     },
     handleCheck(record) {
-      this.$refs.createModal.check(record)
+      console.log(record)
+      this.$router.push({path: '/productlist/list', query:{productId: record.id}})
+      // this.$refs.createModal.check(record)
     },
     handleOk () {
       this.$refs.table.refresh()
