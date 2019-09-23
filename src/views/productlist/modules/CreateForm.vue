@@ -16,40 +16,53 @@
             
               <a-form-item
                 v-bind="formItemLayout"
-                label="行业"
+                label="农场名称"
+                :labelCol="{lg: {span: 7}, sm: {span: 7}}"
+                :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
+                has-feedback
+              >
+                <a-input
+                  v-decorator="[
+                    'name',
+                  ]"
+                    name="name"
+                    placeholder="请输入农场名称"
+                  />
+                  
+              </a-form-item>
+              <a-form-item
+                v-bind="formItemLayout"
+                label="农产品类别"
                 :labelCol="{lg: {span: 7}, sm: {span: 7}}"
                 :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
                 has-feedback
               >
                 <a-select
                   v-decorator="[
-                    'select',
-                    {rules: [{ required: true, message: '请输入行业名称' }]}
+                    'apCategory',
+                    {rules: [{ required: true, message: '请输入农产品类别' }]}
                   ]"
-                  placeholder="请输入行业名称"
+                  placeholder="请输入农产品类别"
                 >
-                  <a-select-option value="china">
+                  <a-select-option value="水果">
                     水果
                   </a-select-option>
-                  <a-select-option value="usa">
-                    电子
+                  <a-select-option value="蔬菜">
+                    蔬菜
+                  </a-select-option>
+                  <a-select-option value="水产">
+                    水产
+                  </a-select-option>
+                  <a-select-option value="禽类">
+                    禽类
+                  </a-select-option>
+                  <a-select-option value="特种养殖">
+                    特种养殖
+                  </a-select-option>
+                  <a-select-option value="五谷杂粮">
+                    五谷杂粮
                   </a-select-option>
                 </a-select>
-              </a-form-item>
-              <a-form-item
-                label="农产品类别"
-                :labelCol="{lg: {span: 7}, sm: {span: 7}}"
-                :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
-                :required="true"
-              >
-                <a-input
-                  v-decorator="[
-                  'check',
-                  {rules: [{ required: true, message: '请输入农产品类别' }]}
-                ]"
-                  name="check"
-                  placeholder="请输入农产品类别"
-                />
               </a-form-item>
               <a-form-item
                 label="环境设施"
@@ -57,10 +70,10 @@
                 :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
               >
                 <a-upload
-                  action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                   listType="picture-card"
-                  :defaultFileList="fileList"
+                  :defaultFileList="environmentalFacilities"
                   class="upload-list-inline"
+                  @change="uploadImage($event, 'enviroment')"
                 >
                   <a-button>
                     <a-icon type="upload" /> upload
@@ -73,10 +86,10 @@
                 :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
               >
                 <a-upload
-                  action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                   listType="picture-card"
-                  :defaultFileList="fileList"
+                  :defaultFileList="certificateHonors"
                   class="upload-list-inline"
+                  @change="uploadImage($event, 'honor')"
                 >
                   <a-button>
                     <a-icon type="upload" /> upload
@@ -89,10 +102,10 @@
                 :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
               >
                 <a-upload
-                  action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                   listType="picture-card"
-                  :defaultFileList="fileList"
+                  :defaultFileList="unitlicense"
                   class="upload-list-inline"
+                  @change="uploadImage($event, 'unit')"
                 >
                   <a-button>
                     <a-icon type="upload" /> upload
@@ -108,26 +121,26 @@
               >
                 <a-row :gutter="8">
                   <a-col :span="11">
-                  <a-select defaultValue="1"  @change="handleStartWeek">
-                    <a-select-option value="1">星期一</a-select-option>
-                    <a-select-option value="2">星期二</a-select-option>
+                  <a-select :defaultValue="startWeek" :value="startWeek"  @change="handleStartWeek">
+                    <a-select-option :value="index" v-for="(item,index) in week" :key="index">{{week[index]}}</a-select-option>
+                    <!-- <a-select-option value="2">星期二</a-select-option>
                     <a-select-option value="3">星期三</a-select-option>
                     <a-select-option value="4">星期四</a-select-option>
                     <a-select-option value="5">星期五</a-select-option>
                     <a-select-option value="6">星期六</a-select-option>
-                    <a-select-option value="7">星期日</a-select-option>
+                    <a-select-option value="7">星期日</a-select-option> -->
                   </a-select>
                   </a-col>
                   <a-col :span="2">---</a-col>
                   <a-col :span="11">
-                   <a-select defaultValue="1"  @change="handleEndWeek">
-                    <a-select-option value="1">星期一</a-select-option>
-                    <a-select-option value="2">星期二</a-select-option>
+                   <a-select :defaultValue="endWeek" :value="endWeek"  @change="handleEndWeek">
+                    <a-select-option :value="index" v-for="(item,index) in week" :key="index">{{week[index]}}</a-select-option>
+                    <!-- <a-select-option value="2">星期二</a-select-option>
                     <a-select-option value="3">星期三</a-select-option>
                     <a-select-option value="4">星期四</a-select-option>
                     <a-select-option value="5">星期五</a-select-option>
                     <a-select-option value="6">星期六</a-select-option>
-                    <a-select-option value="7">星期日</a-select-option>
+                    <a-select-option value="7">星期日</a-select-option> -->
                   </a-select>
                   </a-col>
                   </a-row>
@@ -251,28 +264,19 @@ export default {
         xs: { span: 24 },
         sm: { span: 13 }
       },
-      fileList: [{
-        uid: '-1',
-        name: 'xxx.png',
-        status: 'done',
-        url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        thumbUrl: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-      }, {
-        uid: '-2',
-        name: 'yyy.png',
-        status: 'done',
-        url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        thumbUrl: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-      }],
       visible: false,
       confirmLoading: false,
-      provinceData,
-      cityData,
       selected: [],
-      cities: cityData[provinceData[0]],
-      secondCity: cityData[provinceData[0]][0],
       confirmDirty: false,
+      week: ['星期一','星期二','星期三','星期四','星期五','星期六','星期日'],
       residences,
+      unitlicense: [],
+      certificateHonors: [],
+      environmentalFacilities: [],
+      startWeek: '星期一',
+      startNum: 0,
+      endWeek: '星期日',
+      endNum: 6,
       autoCompleteResult: [],
       showPlace: false,
       showSpecail: false,
@@ -364,6 +368,15 @@ export default {
         this.form.resetFields(['place'])
       }
     },
+    uploadImage(e, type) {
+      if (type === 'enviroment') {
+        this.environmentalFacilities = e.fileList
+      } else if (type === 'honor') {
+        this.certificateHonors = e.fileList
+      } else if (type === 'unit') {
+        this.unitlicense = e.fileList
+      }
+    },
     del(index) {
       console.log(index)
     },
@@ -422,9 +435,26 @@ export default {
       console.log(time, timeString);
     },
     handleStartWeek(value, option) {
-      console.log(value, option)
+      console.log(value)
+      this.startNum = value
+       if (this.startNum > this.endNum) {
+        this.$message.warning('开始日期不能大于开始日期')
+        return
+      } else {
+        this.startWeek = this.week[value]
+      }
+      console.log(this.startWeek);
     },
     handleEndWeek(value, option) {
+      this.endNum = value
+      if (this.startNum > this.endNum) {
+        this.$message.warning('结束日期不能小于开始日期')
+        return
+      } else {
+        this.endWeek = this.week[value]
+      }
+      
+      console.log(this.endWeek);
       console.log(value, option)
     },
     check() {
