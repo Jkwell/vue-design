@@ -3,8 +3,7 @@
     <div class="table-operator">
       <a-form layout="inline">
         <a-row type="flex" justify="end" :gutter="10">
-            <a-col :offset="8"><a-button type="primary" icon="plus" @click="$refs.createModal.add()">新建</a-button></a-col>
-            <a-col><a-button type="primary" @click="del">删除</a-button></a-col>
+            <a-col><a-button type="primary" @click="downloadExcel">导出execl</a-button></a-col>
         </a-row>
       </a-form>
     </div>
@@ -14,10 +13,9 @@
       rowKey="key"
       :columns="columns"
       :data="loadData"
-      :productShow="productShow"
-      :getProductTotals="total"
       :rowSelection="options.rowSelection"
       showPagination="auto"
+      @getData="getData"
     >
       <span slot="detail" slot-scope="text, obj">
         <a @click="handleCheck(obj)">{{text}}</a>
@@ -38,11 +36,12 @@
 
 <script>
 import moment from 'moment'
+import ExportJsonExcel from 'js-export-excel'
 import { STable, Ellipsis } from '@/components'
 import StepByStepModal from './modules/StepByStepModal'
 import CreateForm from './modules/CreateProductForm'
 import CreateDetail from './modules/CreateProductDetail'
-import { productReview, getProductTotal, getProductList, deleteProduct } from '@/api/manage'
+import { wxSurvey } from '@/api/manage'
 
 export default {
   name: 'TableList',
@@ -61,36 +60,31 @@ export default {
     //   advanced: false,
       // 查询参数
       queryParam: {},
-      productShow: true,
+      originData: [],
       currentAccount: null,
       id: '',
       // 表头
       columns: [
           
         {
-          title: '农产品名称',
+          title: '名称',
           dataIndex: 'name'
         },
         
         {
-          title: '详情',
-          dataIndex: 'detail',
+          title: '公司名称',
+          dataIndex: 'companyName',
           scopedSlots: { customRender: 'detail' }
         },
         {
-          title: '操作',
-          dataIndex: 'action',
-          width: '280px',
-          scopedSlots: { customRender: 'action' }
-        }
+          title: '详细信息',
+          dataIndex: 'contactInformation'
+        },
       ],
-      total: () => {
-        return getProductTotal()
-      },
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         console.log('loadData.parameter', parameter)
-        return getProductList(Object.assign(parameter, this.queryParam))
+        return wxSurvey(Object.assign(parameter, this.queryParam))
       },
       selectedRowKeys: [],
       selectedRows: [],
@@ -104,25 +98,9 @@ export default {
       },
     }
   },
-  watch: {
-    $route(from, to) {
-      console.log(to)
-      if (from.fullPath === '/productlist/index') {
-        console.log('dd')
-      }
-    }
-  },
   created () {
-    var productid = this.$route
-    console.log('sfsdfsd')
-    console.log(productid)
-    console.log(this.total)
     this.tableOption()
     
-  },
-  activated () {
-    this.id = this.$route.query.productId
-    console.log(this.id)
   },
   methods: {
     tableOption () {
@@ -139,20 +117,49 @@ export default {
           }
         }
     },
+    getData(obj) {
+        this.originData = obj
+    },
+    downloadExcel() {
+        console.log(this.originData)
+        var data = this.originData
+        var option={};
+        let dataTable = [];
+        if (data) {
+            for (let i in data) {
+            if(data){
+                let obj = {
+                'ID': data[i].id,
+                '名称': data[i].name,
+                '公司名称': data[i].companyName,
+                '详细信息': data[i].contactInformation
+                }
+                dataTable.push(obj);
+            }
+            }
+        }
+        option.fileName = '合格证网上报名情况'
+        option.datas=[
+            {
+            sheetData:dataTable,
+            sheetName:'sheet',
+            sheetFilter:['ID','名称','公司名称','详细信息'],
+            sheetHeader:['ID','名称','公司名称','详细信息'],
+            }
+        ];
+
+        var toExcel = new ExportJsonExcel(option); 
+        toExcel.saveExcel();        
+        console.log('ddd')
+    },
     onModalClose() {
       this.currentAccount = null
       this.visible = false
     },
     del() {
       let _this = this
-      var selectRows = _this.selectedRows
-      var ids = []
       console.log(_this.selectedRowKeys)
-      console.log(_this.selectedRows)
-      for (var i in selectRows) {
-        ids.push(selectRows[i].id)
-      }
-      console.log(ids)
+          console.log(_this.selectedRows)
       if (_this.selectedRowKeys !== '' && _this.selectedRows !== '' && _this.selectedRowKeys !== undefined && _this.selectedRows !== undefined && _this.selectedRowKeys.length>0 && _this.selectedRows.length) {
       this.$confirm({
         title: '提示',
@@ -161,16 +168,13 @@ export default {
         okType: 'primary',
         cancelText: '取消',
         onOk() {
-          if (_this.selectedRowKeys !== '' && _this.selectedRows !== '' && _this.selectedRowKeys !== undefined && _this.selectedRows !== undefined && _this.selectedRowKeys.length>0 && _this.selectedRows.length) {
-            deleteProduct({id: ids}).then((res) => {
-              console.log(res)
-              if (res === true) {
-                 _this.$success({
-                    title: '提示',
-                    content: '删除成功!',
-                  });
-                _this.handleOk(true)
-                _this.clearRows()
+          if (_this.selectedRowKeys !== '' && _this.selectedRows !== '' && _this.selectedRowKeys !== undefined && _this.selectedRows !== undefined) {
+            const id = _this.selectedRows[0].id
+            const obj = {id: id}
+            deleteOne(obj).then(res => {
+              if (res.success === true) {
+                _this.$message.success('删除成功');   
+                _this.$refs.table.refresh(true);
               }
             })
           }
@@ -189,10 +193,6 @@ export default {
     refresh() {
       console.log('ddd')
       this.$refs.table.refresh(true);
-    },
-    clearRows (bool) {
-      console.log('sss')
-      this.$refs.table.clearSelected()
     },
     handleEdit (record) {
       console.log(record)

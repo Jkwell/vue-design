@@ -24,7 +24,8 @@
       </a>
       <span slot="action" slot-scope="text, obj">
         <template>
-          <a @click="handleEdit(obj)" style="margin-right: 6px">编辑</a>
+          <a @click="handleSuc(obj)" style="margin-bottom: 4px;margin-right: 8px">通过审核</a>
+          <a @click="handleEdit(obj)">编辑</a>
         </template>
       </span>
     </s-table>
@@ -38,7 +39,7 @@ import moment from 'moment'
 import { STable, Ellipsis } from '@/components'
 import StepByStepModal from './modules/StepByStepModal'
 import CreateForm from './modules/CreateForm'
-import {getFarmList, getFarmTotal } from '@/api/manage'
+import {getFarmList, getFarmTotal, FarmReview,deletFarm } from '@/api/manage'
 
 export default {
   name: 'TableList',
@@ -115,27 +116,31 @@ export default {
     this.tableOption()
   },
   methods: {
-    changeShow(data) {
-      console.log(data)
+    handleSuc(obj) {
+      var params = {id: obj.id, review: true, remarks: ''}
+      Review(params).then((res) => {
+        if (res === true) {
+          this.$success({
+            title: '提示',
+            content: '通过审核!',
+          });
+        }
+      })
     },
     tableOption () {
         this.options = {
           rowSelection: {
             selectedRowKeys: this.selectedRowKeys,
-            onChange: this.onSelectChange,
-            getCheckboxProps: record => ({
-              props: {
-                disabled: record.no === 'No 2', // Column configuration not to be checked
-                name: record.no
-              }
-            })
+            onChange: this.onSelectChange
           }
         }
     },
     del() {
       let _this = this
       console.log(_this.selectedRowKeys)
-          console.log(_this.selectedRows)
+      console.log(_this.selectedRows)
+      var obj = _this.selectedRows
+      console.log(obj)
       if (_this.selectedRowKeys !== '' && _this.selectedRows !== '' && _this.selectedRowKeys !== undefined && _this.selectedRows !== undefined && _this.selectedRowKeys.length>0 && _this.selectedRows.length) {
       this.$confirm({
         title: '提示',
@@ -145,9 +150,17 @@ export default {
         cancelText: '取消',
         onOk() {
           if (_this.selectedRowKeys !== '' && _this.selectedRows !== '' && _this.selectedRowKeys !== undefined && _this.selectedRows !== undefined && _this.selectedRowKeys.length>0 && _this.selectedRows.length) {
-            console.log(_this.selectedRowKeys)
-            console.log(_this.selectedRows)
-            console.log('OK');
+            deletFarm({id: obj[0].id}).then((res) => {
+              console.log(res)
+              if (res !== '') {
+                 _this.$success({
+                    title: '提示',
+                    content: '删除成功!',
+                  });
+                _this.handleOk(true)
+                _this.clearRows()
+              }
+            })
           }
         },
         onCancel() {
@@ -170,10 +183,16 @@ export default {
       this.$router.push({path: '/productlist/list', query:{productId: record.id}})
       // this.$refs.createModal.check(record)
     },
-    handleOk () {
-      this.$refs.table.refresh()
+    handleOk (bool) {
+      console.log('sss')
+      this.$refs.table.refresh(bool)
+    },
+    clearRows (bool) {
+      console.log('sss')
+      this.$refs.table.clearSelected()
     },
     onSelectChange (selectedRowKeys, selectedRows) {
+      console.log('changge----------------')
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
     },

@@ -4,6 +4,12 @@ const BASE_URL = 'http://47.111.67.221:10000/APSSServer'
 const api = {
   farm: BASE_URL + '/api/FarmInfor/List/total/Paginated',
   farmTotal: BASE_URL + '/api/FarmInfor/Homepage/total',
+  farmAdd: BASE_URL + '/api/FarmInfor',
+  farmReview: BASE_URL + '/api/FarmInfor/Review',
+  productReview: BASE_URL + '/api/AgriculturalProduct/Review',
+  farmDelete: BASE_URL + '/api/FarmInfor',
+  productDelete: BASE_URL + '/api/AgriculturalProduct/BatchDel',
+  wxSurvey: BASE_URL + '/api/WeChatSurvey',
   user: '/user',
   role: '/role',
   service: '/service',
@@ -29,6 +35,49 @@ export function getFarmList (parameter) {
 export function getFarmTotal (parameter) {
   return axios({
     url: api.farmTotal,
+    method: 'get',
+    params: parameter
+  })
+}
+export function farmAdd (params) {
+  return axios({
+    url: api.farmAdd,
+    method: 'post',
+    data: params
+  })
+}
+export function FarmReview (params) {
+  return axios({
+    url: api.farmReview,
+    method: 'put',
+    data: params
+  })
+}
+export function deletFarm (parameter) {
+  console.log(parameter)
+  return axios({
+    url: api.farmDelete,
+    method: 'delete',
+    params: parameter
+  })
+}
+export function deleteProduct (params) {
+  return axios({
+    url: api.productDelete,
+    method: 'delete',
+    data: params
+  })
+}
+export function productReview (params) {
+  return axios({
+    url: api.productReview,
+    method: 'put',
+    data: params
+  })
+}
+export function wxSurvey (parameter) {
+  return axios({
+    url: api.wxSurvey,
     method: 'get',
     params: parameter
   })

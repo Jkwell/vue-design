@@ -28,8 +28,15 @@ export const asyncRouterMap = [
           {
             path: '/productlist/list',
             name: 'list',
+            hidden: true,
             component: () => import('@/views/productlist/list'),
             meta: { title: '农产品列表', keepAlive: false }
+          },
+          {
+            path: '/productlist/report',
+            name: 'report',
+            component: () => import('@/views/productlist/report'),
+            meta: { title: '网上报名', keepAlive: false }
           },
           {
             path: '/productlist/tinymce',

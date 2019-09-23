@@ -8,94 +8,10 @@
     @cancel="handleCancel"
   >
     <a-spin :spinning="confirmLoading">
-      <a-form @submit="handleSubmit" :form="form">
-      <a-tabs defaultActiveKey="1">
-          <a-tab-pane key="1">
-            <span slot="tab">基本信息</span>
-       
-              <a-form-item v-bind="formItemLayout" label="单位名称">
-                <a-input
-                  v-decorator="[
-                    'name',
-                    {
-                    rules: [{
-                    required: true, message: '请输入单位名称',
-                    }],
-                        }
-                  ]"
-                />
-              </a-form-item>
-              <a-form-item v-bind="formItemLayout" label="单位地址">
-                <area-select v-model="selected" @change="cityChange" :data="$pcaa" :level="3"></area-select>
-              </a-form-item>
-              <a-form-item v-bind="formItemLayout" label="联系人">
-                <a-input
-                  v-decorator="[
-                    'concat',
-                    {
-                        rules: [{
-                        required: true, message: '请输入联系人',
-                        }],
-                    }
-                    ]"
-                  type="text"
-                  @blur="handleConfirmBlur"
-                />
-              </a-form-item>
-              <a-form-item v-bind="formItemLayout" label="联系电话">
-                <a-input
-                  v-decorator="[
-          'phoneNumber',
-          {
-            rules: [{
-              required: true, message: '请输入联系电话',
-            }],
-          }
-        ]"
-                  type="number"
-                  @blur="handleConfirmBlur"
-                />
-              </a-form-item>
-              <a-form-item v-bind="formItemLayout" label="邮箱地址">
-                <a-input-search placeholder="请输入邮箱地址" @search="onSearch" >
-                  <a-button slot="enterButton" :disabled="disabled">{{vertifyCode}}</a-button>
-                </a-input-search>
-              </a-form-item>
-              <a-form-item v-bind="formItemLayout" label="输入验证码">
-                <a-input
-                  v-decorator="[
-                    'code',
-                    {
-                        rules: [{
-                        required: true, message: '输入验证码',
-                        }],
-                    }
-                  ]"
-                />
-              </a-form-item>
-              <a-form-item v-bind="formItemLayout" label="生产面积">
-                <a-input
-                  v-decorator="[
-                    'productArea',
-                    {
-                        rules: [{
-                        required: true, message: '输入验证码',
-                        }],
-                    }
-                  ]"
-                />
-              </a-form-item>
-              <a-form-item v-bind="formItemLayout" label="单位介绍">
-                <a-textarea rows="4" v-decorator="[
-            'description',
-          ]" />
-              </a-form-item>
-              <!-- <a-form-item v-bind="tailFormItemLayout">
-                <a-row type="flex" justify="end"><a-button type="primary" html-type="submit">保存</a-button></a-row>
-              </a-form-item>
-            </a-form> -->
-          </a-tab-pane>
+       <a-form @submit="handleSubmit" :form="form">
+      <a-tabs defaultActiveKey="2">
           <a-tab-pane key="2">
+           
             <span slot="tab">农场信息</span>
             
               <a-form-item
@@ -192,28 +108,36 @@
               >
                 <a-row :gutter="8">
                   <a-col :span="11">
-                  <a-select defaultValue="1"  @change="handleChange">
+                  <a-select defaultValue="1"  @change="handleStartWeek">
                     <a-select-option value="1">星期一</a-select-option>
                     <a-select-option value="2">星期二</a-select-option>
                     <a-select-option value="3">星期三</a-select-option>
+                    <a-select-option value="4">星期四</a-select-option>
+                    <a-select-option value="5">星期五</a-select-option>
+                    <a-select-option value="6">星期六</a-select-option>
+                    <a-select-option value="7">星期日</a-select-option>
                   </a-select>
                   </a-col>
                   <a-col :span="2">---</a-col>
                   <a-col :span="11">
-                   <a-select defaultValue="1"  @change="handleChange">
+                   <a-select defaultValue="1"  @change="handleEndWeek">
                     <a-select-option value="1">星期一</a-select-option>
                     <a-select-option value="2">星期二</a-select-option>
                     <a-select-option value="3">星期三</a-select-option>
+                    <a-select-option value="4">星期四</a-select-option>
+                    <a-select-option value="5">星期五</a-select-option>
+                    <a-select-option value="6">星期六</a-select-option>
+                    <a-select-option value="7">星期日</a-select-option>
                   </a-select>
                   </a-col>
                   </a-row>
                    <a-row :gutter="8">
                   <a-col :span="11">
-                  <a-time-picker @change="onChange" :defaultOpenValue="moment('00:00', 'HH:mm')" />
+                  <a-time-picker @change="handleStartTime" :defaultOpenValue="moment('00:00', 'HH:mm')" />
                   </a-col>
                   <a-col :span="2">---</a-col>
                   <a-col :span="11">
-                   <a-time-picker @change="onChange" :defaultOpenValue="moment('00:00', 'HH:mm')" />
+                   <a-time-picker @change="handleEndTime" :defaultOpenValue="moment('00:00', 'HH:mm')" />
                   </a-col>
                   </a-row>
               </a-form-item>
@@ -267,10 +191,10 @@
                 <a-row type="flex" justify="end"><a-button type="primary" html-type="submit">保存</a-button></a-row>
                 
               </a-form-item>
-            
+           
           </a-tab-pane>
         </a-tabs>
-        </a-form>
+         </a-form>
     </a-spin>
   </a-modal>
 </template>
@@ -491,8 +415,17 @@ export default {
       this.visible = false
     },
     moment,
-    onChange(time, timeString){
+    handleStartTime(time, timeString){
       console.log(time, timeString);
+    },
+    handleEndTime(time, timeString){
+      console.log(time, timeString);
+    },
+    handleStartWeek(value, option) {
+      console.log(value, option)
+    },
+    handleEndWeek(value, option) {
+      console.log(value, option)
     },
     check() {
       this.visible = true
