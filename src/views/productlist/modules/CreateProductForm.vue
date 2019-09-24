@@ -30,7 +30,7 @@
           :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
           :required="true"
         >
-        <a-select placeholder="请输入农产品类别" v-decorator="['apCategory', {initialValue: account && account.apCategory ? account.apCategory : '', rules: [{ required: true, message: '请输入采购渠道' }]}]" @change="handleShop">
+        <a-select placeholder="请输入农产品类别" v-decorator="['apCategory', {initialValue: account && account.apCategory ? account.apCategory : '水果', rules: [{ required: true, message: '请输入采购渠道' }]}]" @change="handleShop">
             <a-select-option value="水果">水果</a-select-option>
             <a-select-option value="蔬菜">蔬菜</a-select-option>
             <a-select-option value="五谷杂粮">五谷杂粮</a-select-option>
@@ -108,7 +108,7 @@
             placeholder="请选择开始日期"
             v-decorator="[
             'startDate',
-            {initialValue: moment(startDate), rules: [{ required: true, message: '请选择开始日期' }]}
+            {initialValue: startDate ? moment(startDate) : '' , rules: [{ required: true, message: '请选择开始日期' }]}
           ]"
           />
           <text>——</text>
@@ -118,7 +118,7 @@
             placeholder="请选择截止日期"
             v-decorator="[
             'endDate',
-            {initialValue: moment(endDate), rules: [{ required: true, message: '请选择截止日期' }]}
+            {initialValue: endDate ? moment(endDate) : '', rules: [{ required: true, message: '请选择截止日期' }]}
           ]"
           />
         </a-form-item>
@@ -130,13 +130,13 @@
         >
         <a-row :gutter="8">
           <a-col :span="16">
-          <a-select placeholder="请输入储藏方式" v-decorator="['consumption', {initialValue: consumption , rules: [{ required: true, message: '请选择储藏方式' }]}]"  @change="handleChange">
-            <a-select-option value="1">冷藏</a-select-option>
-            <a-select-option value="2">常温</a-select-option>
+          <a-select placeholder="请输入储藏方式" v-decorator="['consumption', {initialValue: consumption ? consumption : '冷藏' , rules: [{ required: true, message: '请选择储藏方式' }]}]"  @change="handleChange">
+            <a-select-option value="冷藏">冷藏</a-select-option>
+            <a-select-option value="常温">常温</a-select-option>
           </a-select>
           </a-col>
           <a-col :span="8">
-            <a-input-number v-decorator="['time', {initialValue: time, rules: [{ required: true, message: '请输入天数' }]}]" :min="1" :max="10" @change="onChange" />天
+            <a-input-number v-decorator="['time', {initialValue: time ? time : 1, rules: [{ required: true, message: '请输入天数' }]}]" :min="1" :max="10" @change="onChange" />天
           </a-col>
           
           </a-row>
@@ -184,7 +184,7 @@
           :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
           :required="true"
         >
-        <a-select placeholder="请输入分类" v-decorator="['classification', {initialValue: account && account.classification ? account.classification : '4', rules: [{ required: true, message: '请输入采购渠道' }]}]" @change="handleShop">
+        <a-select placeholder="请输入分类" v-decorator="['classification', {initialValue: account && account.classification ? account.classification : '种植', rules: [{ required: true, message: '请输入采购渠道' }]}]" @change="handleShop">
             <a-select-option value="种植">种植</a-select-option>
             <a-select-option value="水产">水产</a-select-option>
             <a-select-option value="畜牧">畜牧</a-select-option>
@@ -199,6 +199,7 @@
                   action=""
                   listType="picture-card"
                   :defaultFileList="fileList"
+                  :fileList="fileList"
                   @preview="handlePreview"
                   class="upload-list-inline"
                 >
@@ -324,8 +325,16 @@ export default {
     
     handleCancel () {
       this.form.resetFields()
+      this.resetValues()
       this.$emit('close')
       this.visible = false
+    },
+    resetValues() {
+      this.fileList = []
+      this.startDate =  ''
+      this.endDate = ''
+      this.consumption = ''
+      this.time = ''
     },
     cancel () {
       this.visible = false

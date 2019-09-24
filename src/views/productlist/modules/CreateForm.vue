@@ -5,7 +5,7 @@
     :visible="visible"
     :confirmLoading="confirmLoading"
     :footer="null"
-    @cancel="handleCancel"
+    @cancel="handleCancel(false)"
   >
     <a-spin :spinning="confirmLoading">
        <a-form :form="form">
@@ -42,7 +42,7 @@
                 <a-select
                   v-decorator="[
                     'apCategory',
-                    {initialValue: account && account.apCategory,rules: [{ required: true, message: '请输入农产品类别' }]}
+                    {initialValue: account && account.apCategory ? account.apCategory : '水果',rules: [{ required: true, message: '请输入农产品类别' }]}
                   ]"
                   placeholder="请输入农产品类别"
                 >
@@ -488,6 +488,9 @@ export default {
       console.log('11')
     },
     handleCancel () {
+      this.form.resetFields()
+      this.resetValues()
+      this.$emit('close')
       this.visible = false
     },
     resetValues() {

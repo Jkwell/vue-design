@@ -30,7 +30,7 @@
       </span>
     </s-table>
     
-    <create-form ref="createModal" :account="currentAccount" @ok="handleOk" @farmAdd="farmAdd"/>
+    <create-form ref="createModal" :account="currentAccount" @close="onModalClose" @ok="handleOk" @farmAdd="farmAdd"/>
   </a-card>
 </template>
 
@@ -131,6 +131,10 @@ export default {
           });
         }
       })
+    },
+    onModalClose() {
+      this.currentAccount = null
+      this.visible = false
     },
     tableOption () {
         this.options = {
