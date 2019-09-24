@@ -30,7 +30,7 @@
       </span>
     </s-table>
     
-    <create-form ref="createModal" @ok="handleOk" />
+    <create-form ref="createModal" :account="currentAccount" @ok="handleOk" @farmAdd="farmAdd"/>
   </a-card>
 </template>
 
@@ -39,7 +39,7 @@ import moment from 'moment'
 import { STable, Ellipsis } from '@/components'
 import StepByStepModal from './modules/StepByStepModal'
 import CreateForm from './modules/CreateForm'
-import {getFarmList, getFarmTotal, FarmReview,deletFarm } from '@/api/manage'
+import {getFarmList,getFarmDetail, getFarmTotal,farmAdd, FarmReview,deletFarm } from '@/api/manage'
 
 export default {
   name: 'TableList',
@@ -58,28 +58,33 @@ export default {
     //   advanced: false,
       // 查询参数
       queryParam: {},
+      currentAccount: null,
       // 表头
       columns: [  
         {
           title: '农场主名称',
           dataIndex: 'name'
         },
-        
         {
-          title: '账号',
-          dataIndex: 'account',
-          scopedSlots: { customRender: 'account' }
+          title: '详情',
+          dataIndex: 'detail',
+          scopedSlots: { customRender: 'detail' }
         },
-        {
-          title: '单位信息',
-          dataIndex: 'shopInfo',
-          needTotal: true,
-        },
-        {
-          title: '状态',
-          dataIndex: 'status',
-          scopedSlots: { customRender: 'status' }
-        },
+        // {
+        //   title: '账号',
+        //   dataIndex: 'account',
+        //   scopedSlots: { customRender: 'account' }
+        // },
+        // {
+        //   title: '单位信息',
+        //   dataIndex: 'shopInfo',
+        //   needTotal: true,
+        // },
+        // {
+        //   title: '状态',
+        //   dataIndex: 'status',
+        //   scopedSlots: { customRender: 'status' }
+        // },
         {
           title: '农场品列表',
           dataIndex: 'productList',
@@ -135,6 +140,14 @@ export default {
           }
         }
     },
+    farmAdd(obj) {
+      farmAdd(obj, (res) => {
+        console.log(res)
+        if (res === true) {
+          this.$message.success('新增成功')
+        }
+      })
+    },
     del() {
       let _this = this
       console.log(_this.selectedRowKeys)
@@ -174,9 +187,18 @@ export default {
       });
       }
     },
-    handleEdit (record) {
-      console.log(record)
-      this.$refs.createModal.edit(record)
+    async handleEdit (record) {
+       console.log(record)
+      let _this = this
+      // Object.assign(record, {action: 'edit'})
+      // this.currentAccount = record
+      // this.$refs.createModal.edit() 
+      // console.log('sfsdfasf')
+       await getFarmDetail(record.id).then((res) => {
+        Object.assign(res, {action: 'edit'})
+         this.currentAccount = res
+      })
+      this.$refs.createModal.edit() 
     },
     handleCheck(record) {
       console.log(record)

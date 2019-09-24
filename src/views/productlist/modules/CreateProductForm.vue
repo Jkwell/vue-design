@@ -25,6 +25,18 @@
           />
         </a-form-item>
         <a-form-item
+          label="农产品类别"
+          :labelCol="{lg: {span: 7}, sm: {span: 7}}"
+          :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
+          :required="true"
+        >
+        <a-select placeholder="请输入农产品类别" v-decorator="['apCategory', {initialValue: account && account.apCategory ? account.apCategory : '', rules: [{ required: true, message: '请输入采购渠道' }]}]" @change="handleShop">
+            <a-select-option value="水果">水果</a-select-option>
+            <a-select-option value="蔬菜">蔬菜</a-select-option>
+            <a-select-option value="五谷杂粮">五谷杂粮</a-select-option>
+          </a-select>
+               </a-form-item>
+        <a-form-item
           label="重(数)量"
           :labelCol="{lg: {span: 7}, sm: {span: 7}}"
           :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
@@ -32,10 +44,10 @@
         >
           <a-input
             v-decorator="[
-            'weight',
-            {initialValue: account && account.weight ,rules: [{ required: true, message: '请输入重量或数量' }]}
+            'specifications',
+            {initialValue: account && account.specifications,rules: [{ required: true, message: '请输入重量或数量' }]}
           ]"
-            name="weight"
+            name="specifications"
             placeholder="请输入重量或数量"
           />
         </a-form-item>
@@ -47,11 +59,26 @@
         >
           <a-input
             v-decorator="[
-            'company',
-            {initialValue: account && account.company,rules: [{ required: true, message: '请输入单位名称' }]}
+            'unit',
+            {initialValue: account && account.unit,rules: [{ required: true, message: '请输入单位名称' }]}
           ]"
-            name="company"
+            name="unit"
             placeholder="请输入单位名称"
+          />
+        </a-form-item>
+        <a-form-item
+          label="地块Id"
+          :labelCol="{lg: {span: 7}, sm: {span: 7}}"
+          :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
+          :required="true"
+        >
+          <a-input
+            v-decorator="[
+            'blockId',
+            {initialValue: account && account.blockId ,rules: [{ required: true, message: '请输入地块Id' }]}
+          ]"
+            name="blockId"
+            placeholder="请输入地块Id"
           />
         </a-form-item>
         <a-form-item
@@ -62,10 +89,10 @@
         >
           <a-input
             v-decorator="[
-            'code',
-            {initialValue: account && account.code,rules: [{ required: true, message: '请输入溯源条码' }]}
+            'traceabilityBarCode',
+            {initialValue: account && account.traceabilityBarCode,rules: [{ required: true, message: '请输入溯源条码' }]}
           ]"
-            name="code"
+            name="traceabilityBarCode"
             placeholder="请输入溯源条码"
           />
         </a-form-item>
@@ -76,22 +103,22 @@
           :required="true"
         >
           <a-date-picker
-            name="startTime"
+            name="startDate"
             style="width: 100%"
             placeholder="请选择开始日期"
             v-decorator="[
-            'startTime',
-            {rules: [{ required: true, message: '请选择开始日期' }]}
+            'startDate',
+            {initialValue: moment(startDate), rules: [{ required: true, message: '请选择开始日期' }]}
           ]"
           />
           <text>——</text>
           <a-date-picker
-            name="endTime"
+            name="endDate"
             style="width: 100%"
             placeholder="请选择截止日期"
             v-decorator="[
-            'endTime',
-            {rules: [{ required: true, message: '请选择截止日期' }]}
+            'endDate',
+            {initialValue: moment(endDate), rules: [{ required: true, message: '请选择截止日期' }]}
           ]"
           />
         </a-form-item>
@@ -103,14 +130,13 @@
         >
         <a-row :gutter="8">
           <a-col :span="16">
-          <a-select placeholder="请输入储藏方式" v-decorator="['heart', {initialValue: account && account.heart ? account.heart : '1', rules: [{ required: true, message: '请选择储藏方式' }]}]"  @change="handleChange">
-            <a-select-option value="1">冷藏1</a-select-option>
-            <a-select-option value="2">冷藏2</a-select-option>
-            <a-select-option value="3">冷藏3</a-select-option>
+          <a-select placeholder="请输入储藏方式" v-decorator="['consumption', {initialValue: consumption , rules: [{ required: true, message: '请选择储藏方式' }]}]"  @change="handleChange">
+            <a-select-option value="1">冷藏</a-select-option>
+            <a-select-option value="2">常温</a-select-option>
           </a-select>
           </a-col>
           <a-col :span="8">
-            <a-input-number v-decorator="['dayTime', {initialValue: account && account.dayTime, rules: [{ required: true, message: '请输入天数' }]}]" :min="1" :max="10" @change="onChange" />天
+            <a-input-number v-decorator="['time', {initialValue: time, rules: [{ required: true, message: '请输入天数' }]}]" :min="1" :max="10" @change="onChange" />天
           </a-col>
           
           </a-row>
@@ -123,10 +149,10 @@
         >
           <a-input
             v-decorator="[
-            'eatMethod',
-            {initialValue: account && account.eatMethod, rules: [{ required: true, message: '请输入食用方法' }]}
+            'edibleMethod',
+            {initialValue: account && account.edibleMethod, rules: [{ required: true, message: '请输入食用方法' }]}
           ]"
-            name="eatMethod"
+            name="edibleMethod"
             placeholder="请输入食用方法"
           />
         </a-form-item>
@@ -153,114 +179,59 @@
         </a-modal>
         </a-form-item> -->
         <a-form-item
+          label="分类"
+          :labelCol="{lg: {span: 7}, sm: {span: 7}}"
+          :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
+          :required="true"
+        >
+        <a-select placeholder="请输入分类" v-decorator="['classification', {initialValue: account && account.classification ? account.classification : '4', rules: [{ required: true, message: '请输入采购渠道' }]}]" @change="handleShop">
+            <a-select-option value="种植">种植</a-select-option>
+            <a-select-option value="水产">水产</a-select-option>
+            <a-select-option value="畜牧">畜牧</a-select-option>
+          </a-select>
+               </a-form-item>
+               <a-form-item
+                label="产品图片"
+                :labelCol="{lg: {span: 7}, sm: {span: 7}}"
+                :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
+              >
+                <a-upload
+                  action=""
+                  listType="picture-card"
+                  :defaultFileList="fileList"
+                  @preview="handlePreview"
+                  class="upload-list-inline"
+                >
+                  <a-button>
+                    <a-icon type="upload" /> upload
+                  </a-button>
+                </a-upload>
+                <a-modal :visible="previewVisible" :footer="null" @cancel="handlePreviewCancel">
+                  <img alt="example" style="width: 100%" :src="previewImage" />
+                </a-modal>
+              </a-form-item>
+              <a-form-item
+          label="上架"
+          :labelCol="{lg: {span: 7}, sm: {span: 7}}"
+          :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
+          :required="true"
+        >
+               <a-switch v-decorator="['shelf', {initialValue: account && account.shelf ? account.shelf : '', rules: [{ required: true, message: '是否上架' }]}]"  defaultChecked @change='onChange'/>
+               </a-form-item>
+        <a-form-item
           label="产品介绍"
           :labelCol="{lg: {span: 7}, sm: {span: 7}}"
           :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
           :required="false"
         >
-          <tinymce-editor :value="value"></tinymce-editor>
-        </a-form-item>
-        
-        <a-form-item
-          label="采购渠道"
-          :labelCol="{lg: {span: 7}, sm: {span: 7}}"
-          :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
-          :required="false"
-        >
-        <a-row :gutter="8">
-          <a-col :span="16">
-          <a-select placeholder="请输入采购渠道" v-decorator="['shopChannel', {initialValue: account && account.shopChannel ? account.shopChannel : '4', rules: [{ required: true, message: '请输入采购渠道' }]}]" @change="handleShop">
-            <a-select-option value="4">jk1</a-select-option>
-            <a-select-option value="5">jk2</a-select-option>
-            <a-select-option value="6">其他</a-select-option>
-          </a-select>
-          </a-col>
-          <a-col :span="8" >
-          <a-input
-            v-if="showChannel"
-            v-decorator="[
-            'channel',
-            {initialValue: account && account.channel , rules: [{ required: true, message: '人工填写' }]}
-          ]"
-            name="channel"
-            placeholder="人工填写"
-          />
-          </a-col>
-          </a-row>
-          </a-form-item>
-          <a-form-item
-          label="实体店"
-          :labelCol="{lg: {span: 7}, sm: {span: 7}}"
-          :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
-          :required="false"
-        >
+          <!-- <tinymce-editor :value="value"></tinymce-editor> -->
           <a-input
             v-decorator="[
-            'shop',
-            {initialValue: account && account.shop, rules: [{ required: true, message: '请输入店铺名称'}]}
+            'productDescription',
+            {initialValue: account && account.productDescription , rules: [{ required: true, message: '产品介绍' }]}
           ]"
-            name="shop"
-            placeholder="请输入店铺名称"
-          />
-        </a-form-item>
-        <a-form-item
-          label="电商网址"
-          :labelCol="{lg: {span: 7}, sm: {span: 7}}"
-          :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
-          :required="false"
-        >
-          <a-input
-            v-decorator="[
-            'url',
-            {initialValue: account && account.url,rules: [{ required: true, message: '请输入网址' }]}
-          ]"
-            name="url"
-            placeholder="请输入网址"
-          />
-        </a-form-item>
-        <a-form-item
-          label="第三方检测"
-          :labelCol="{lg: {span: 7}, sm: {span: 7}}"
-          :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
-          :required="false"
-        >
-          <a-input
-            v-decorator="[
-            'check',
-            {initialValue: account && account.check,rules: [{ required: true, message: '请输入检测名称' }]}
-          ]"
-            name="check"
-            placeholder="请输入检测名称"
-          />
-        </a-form-item>
-        <a-form-item
-          label="官方认证"
-          :labelCol="{lg: {span: 7}, sm: {span: 7}}"
-          :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
-          :required="false"
-        >
-          <a-input
-            v-decorator="[
-            'auth',
-            {initialValue:account && account.auth,rules: [{ required: true, message: '请输入认证名称' }]}
-          ]"
-            name="auth"
-            placeholder="请输入认证名称"
-          />
-        </a-form-item>
-        <a-form-item
-          label="等级评定"
-          :labelCol="{lg: {span: 7}, sm: {span: 7}}"
-          :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
-          :required="false"
-        >
-          <a-input
-            v-decorator="[
-            'grade',
-            {initialValue: account && account.grade, rules: [{ required: true, message: '请输入等级评定' }]}
-          ]"
-            name="grade"
-            placeholder="请输入等级评定"
+            name="productDescription"
+            placeholder="产品介绍"
           />
         </a-form-item>
         <a-row><div class="line" style="height:1px;width:100%;background:#ccc;margin:30px 0 15px 0;"></div></a-row>
@@ -277,9 +248,12 @@
 import moment from 'moment'
 import tinymceEditor from '../tinymce'
 import { addOne, modifyProduct} from '@/api/manage'
+const BASE_URL = 'http://47.111.67.221:10000/'
 export default {
   props: {
-    account: Object
+    account:  {
+      type: Object
+    }
   }, 
   components: {
     tinymceEditor
@@ -295,6 +269,10 @@ export default {
         sm: { span: 13 }
       },
       fileList: [],
+      startDate: '',
+      endDate: '',
+      consumption: '',
+      time: '',
       visible: false,
       value: '',
       previewVisible: false,
@@ -352,9 +330,6 @@ export default {
     cancel () {
       this.visible = false
     },
-    cancelUpload () {
-      this.previewVisible = false
-    },
     moment,
     onChange(time, timeString){
       console.log(time, timeString);
@@ -365,18 +340,11 @@ export default {
     },
     handlePreview (file) {
       console.log(file)
-      this.previewImage = file.response.url || file.response.thumbUrl
+      this.previewImage = file.url || file.thumbUrl
       this.previewVisible = true
     },
-    handleUpload (file) {
-      let fileLists = [];
-      console.log(file)
-      for (let i = 0; i< file.fileList.length; i++) {
-        let item = {...file.fileList[i].response}
-        fileLists.push({uid: file.fileList[i].uid, name: file.fileList[i].name, url: item.url, thumbUrl: item.thumbUrl, status: item.status})
-      }
-      this.fileList = fileLists
-      console.log(this.fileList)
+    handlePreviewCancel() {
+      this.previewVisible = false
     },
     handleSubmit(e) {
       let _this = this
@@ -431,7 +399,17 @@ export default {
     },
     edit() {
       this.visible = true
-      console.log()
+      var array = this.account.images.map((item, index) => {
+        return {uid: String(item.id), url: BASE_URL + item.originalurl, thumburl: BASE_URL + item.thumburl}
+      })
+      this.fileList = array
+      console.log(this.fileList)
+      this.startDate = this.account.timeToMarket.substring(0, 10)
+      this.endDate = this.account.timeToMarket.substring(11)
+      this.consumption = this.account.consumptionPeriod.substring(0, 2)
+      this.time = this.account.consumptionPeriod.substring(2)
+      console.log(this.startDate)
+      console.log(this.endDate)
     },
     handleWebsiteChange(value) {
       let autoCompleteResult

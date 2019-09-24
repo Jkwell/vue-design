@@ -9,6 +9,8 @@ const api = {
   productReview: BASE_URL + '/api/AgriculturalProduct/Review',
   farmDelete: BASE_URL + '/api/FarmInfor',
   productDelete: BASE_URL + '/api/AgriculturalProduct/BatchDel',
+  getProductList: BASE_URL + '/api/AgriculturalProduct/',
+  getFarmDetail: BASE_URL + '/api/FarmInfor/',
   wxSurvey: BASE_URL + '/api/WeChatSurvey',
   user: '/user',
   role: '/role',
@@ -82,6 +84,13 @@ export function wxSurvey (parameter) {
     params: parameter
   })
 }
+export function getFarmDetail (parameter) {
+  var Url = api.getFarmDetail + parameter
+  return axios({
+    url: Url,
+    method: 'get'
+  })
+}
 export function getUserList (parameter) {
   return axios({
     url: api.user,
@@ -130,6 +139,21 @@ export function getServiceList (parameter) {
 }
 
 export function getProductList (parameter) {
+  console.log(parameter)
+  return axios({
+    url: api.product + parameter.id,
+    method: 'get'
+  })
+}
+export function getProductDetailById (parameter) {
+  console.log(parameter)
+  var Url = api.getProductList + parameter
+  return axios({
+    url: Url,
+    method: 'get'
+  })
+}
+export function get (parameter) {
   console.log(parameter)
   return axios({
     url: api.product + parameter.id,

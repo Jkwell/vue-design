@@ -8,7 +8,7 @@
     @cancel="handleCancel"
   >
     <a-spin :spinning="confirmLoading">
-       <a-form @submit="handleSubmit" :form="form">
+       <a-form :form="form">
       <a-tabs defaultActiveKey="2">
           <a-tab-pane key="2">
            
@@ -23,7 +23,9 @@
               >
                 <a-input
                   v-decorator="[
-                    'name',
+                    'name',{
+                      initialValue: account && account.name
+                    }
                   ]"
                     name="name"
                     placeholder="请输入农场名称"
@@ -40,7 +42,7 @@
                 <a-select
                   v-decorator="[
                     'apCategory',
-                    {rules: [{ required: true, message: '请输入农产品类别' }]}
+                    {initialValue: account && account.apCategory,rules: [{ required: true, message: '请输入农产品类别' }]}
                   ]"
                   placeholder="请输入农产品类别"
                 >
@@ -70,15 +72,21 @@
                 :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
               >
                 <a-upload
+                  action=""
                   listType="picture-card"
                   :defaultFileList="environmentalFacilities"
                   class="upload-list-inline"
+                  :fileList='environmentalFacilities'
+                  @preview="handlePreview"
                   @change="uploadImage($event, 'enviroment')"
                 >
                   <a-button>
                     <a-icon type="upload" /> upload
                   </a-button>
                 </a-upload>
+                <a-modal :visible="previewVisible" :footer="null" @cancel="handlePreviewCancel">
+                  <img alt="example" style="width: 100%" :src="previewImage" />
+                </a-modal>
               </a-form-item>
               <a-form-item
                 label="荣誉证书"
@@ -86,15 +94,21 @@
                 :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
               >
                 <a-upload
+                action=""
                   listType="picture-card"
                   :defaultFileList="certificateHonors"
                   class="upload-list-inline"
+                  :fileList='certificateHonors'
+                  @preview="handlePreview"
                   @change="uploadImage($event, 'honor')"
                 >
                   <a-button>
                     <a-icon type="upload" /> upload
                   </a-button>
                 </a-upload>
+                <a-modal :visible="previewVisible" :footer="null" @cancel="handlePreviewCancel">
+                  <img alt="example" style="width: 100%" :src="previewImage" />
+                </a-modal>
               </a-form-item>
               <a-form-item
                 label="单位执照"
@@ -102,15 +116,21 @@
                 :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
               >
                 <a-upload
+                 action=""
                   listType="picture-card"
                   :defaultFileList="unitlicense"
                   class="upload-list-inline"
+                  :fileList='unitlicense'
+                  @preview="handlePreview"
                   @change="uploadImage($event, 'unit')"
                 >
                   <a-button>
                     <a-icon type="upload" /> upload
                   </a-button>
                 </a-upload>
+                <a-modal :visible="previewVisible" :footer="null" @cancel="handlePreviewCancel">
+                  <img alt="example" style="width: 100%" :src="previewImage" />
+                </a-modal>
               </a-form-item>
               <a-form-item
                 v-bind="formItemLayout"
@@ -146,11 +166,12 @@
                   </a-row>
                    <a-row :gutter="8">
                   <a-col :span="11">
-                  <a-time-picker @change="handleStartTime" :defaultOpenValue="moment('00:00', 'HH:mm')" />
+                  <!-- <a-time-picker :defaultValue="moment('12:08', 'HH:mm')" format="HH:mm" /> -->
+                  <a-time-picker @change="handleStartTime" :value="moment(startTime, 'HH:mm')" :defaultValue="moment('00:00', 'HH:mm')" format="HH:mm" />
                   </a-col>
                   <a-col :span="2">---</a-col>
                   <a-col :span="11">
-                   <a-time-picker @change="handleEndTime" :defaultOpenValue="moment('00:00', 'HH:mm')" />
+                   <a-time-picker @change="handleEndTime" :value="moment(endTime, 'HH:mm')" :defaultValue="moment('23:59', 'HH:mm')" format="HH:mm" />
                   </a-col>
                   </a-row>
               </a-form-item>
@@ -161,7 +182,7 @@
                 :required="false"
               >
                 <a-row type="flex" v-if="showSpecail">
-                  <a-col style="position: relative;" v-for="(item, index) in specialServices" :key="index"><a style="margin-right: 6px;backgournd:#fff;border:1px solid #d9d9d9;color:rgba(0, 0, 0, 0.65);border-radius: 4px; padding: 6px 15px; line-height: 32px;">{{item.name}}</a><a-popconfirm title="确定要删除这一项吗?" @confirm="confirmService(index)" @cancel="cancelService" okText="Yes" cancelText="No"><a-icon type="close-circle" style="color: red; position: absolute; right: 0; cursor: pointer" /></a-popconfirm></a-col>
+                  <a-col style="position: relative;" v-for="(item, index) in characteristicService" :key="index"><a style="margin-right: 6px;backgournd:#fff;border:1px solid #d9d9d9;color:rgba(0, 0, 0, 0.65);border-radius: 4px; padding: 6px 15px; line-height: 32px;">{{item.name}}</a><a-popconfirm title="确定要删除这一项吗?" @confirm="confirmService(index)" @cancel="cancelService" okText="Yes" cancelText="No"><a-icon type="close-circle" style="color: red; position: absolute; right: 0; cursor: pointer" /></a-popconfirm></a-col>
                 </a-row>
                 <a-row type="flex">
                     <a-col><a style="margin-right: 6px;backgournd:#fff;border:1px solid #d9d9d9;color:rgba(0, 0, 0, 0.65);border-radius: 4px; padding: 6px 15px; line-height: 32px;">自定义</a></a-col>
@@ -184,7 +205,7 @@
                 :required="false"
               >
                 <a-row type="flex" v-if="showPlace">
-                  <a-col style="position: relative;" v-for="(item, index) in placeItems" :key="index"><a style="margin-right: 6px;backgournd:#fff;border:1px solid #d9d9d9;color:rgba(0, 0, 0, 0.65);border-radius: 4px; padding: 6px 15px; line-height: 32px;">{{item.name}}</a><a-popconfirm title="确定要删除这一项吗?" @confirm="confirmPlace(index)" @cancel="cancelPlace" okText="Yes" cancelText="No"><a-icon type="close-circle" style="color: red; position: absolute; right: 0; cursor: pointer" /></a-popconfirm></a-col>
+                  <a-col style="position: relative;" v-for="(item, index) in siteFacilities" :key="index"><a style="margin-right: 6px;backgournd:#fff;border:1px solid #d9d9d9;color:rgba(0, 0, 0, 0.65);border-radius: 4px; padding: 6px 15px; line-height: 32px;">{{item.name}}</a><a-popconfirm title="确定要删除这一项吗?" @confirm="confirmPlace(index)" @cancel="cancelPlace" okText="Yes" cancelText="No"><a-icon type="close-circle" style="color: red; position: absolute; right: 0; cursor: pointer" /></a-popconfirm></a-col>
                 </a-row>
                 <a-row type="flex">
                     <a-col><a style="margin-right: 6px;backgournd:#fff;border:1px solid #d9d9d9;color:rgba(0, 0, 0, 0.65);border-radius: 4px; padding: 6px 15px; line-height: 32px;">自定义</a></a-col>
@@ -201,7 +222,7 @@
                 </a-row>
               </a-form-item>
               <a-form-item>
-                <a-row type="flex" justify="end"><a-button type="primary" html-type="submit">保存</a-button></a-row>
+                <a-row type="flex" justify="end"><a-button type="primary" @click="save">保存</a-button></a-row>
                 
               </a-form-item>
            
@@ -214,6 +235,7 @@
 
 <script>
 import moment from 'moment'
+const BASE_URL = 'http://47.111.67.221:10000/'
 const provinceData = ['Zhejiang', 'Jiangsu']
 const cityData = {
   Zhejiang: ['Hangzhou', 'Ningbo', 'Wenzhou'],
@@ -254,6 +276,11 @@ const residences = [
   }
 ]
 export default {
+  props: {
+    account: {
+      type: Object
+    }
+  },
   data () {
     return {
       labelCol: {
@@ -266,6 +293,8 @@ export default {
       },
       visible: false,
       confirmLoading: false,
+      previewVisible: false,
+      previewImage: '',
       selected: [],
       confirmDirty: false,
       week: ['星期一','星期二','星期三','星期四','星期五','星期六','星期日'],
@@ -273,10 +302,14 @@ export default {
       unitlicense: [],
       certificateHonors: [],
       environmentalFacilities: [],
+      characteristicService: [],
+      siteFacilities: [],
       startWeek: '星期一',
       startNum: 0,
       endWeek: '星期日',
       endNum: 6,
+      startTime: '00:00',
+      endTime: '23:59',
       autoCompleteResult: [],
       showPlace: false,
       showSpecail: false,
@@ -349,6 +382,7 @@ export default {
     addPlace() {
       let _this = this
       let value = this.form.getFieldValue('place')
+      console.log(value)
       if (this.placeValues.indexOf(value) > -1) {
           this.$warning({
           title: '提示',
@@ -363,7 +397,8 @@ export default {
         });
       } else {
         this.placeValues.push(value)
-        this.placeItems.push({name: value})
+        console.log({name: value, id: 0, farmInforId: null})
+        this.siteFacilities.push({name: value, id: 0, farmInforId: null})
         this.showPlace = true
         this.form.resetFields(['place'])
       }
@@ -397,7 +432,7 @@ export default {
         });
       } else {
         this.specailValues.push(value)
-        this.specialServices.push({name: value})
+        this.characteristicService.push({name: value, id: 0, farmInforId: null})
         this.showSpecail = true
         this.form.resetFields(['service'])
       }
@@ -405,12 +440,40 @@ export default {
     cityChange(e) {
       console.log(e)
     },
-    handleSubmit () {
+    delImage(array) {
+      let newArray = []
+      array.forEach((item, index) => {
+        newArray.push({type: 'image', fileName: index + '.png', base64String: item.thumbUrl}) 
+        return newArray
+      })
+      return newArray
+    },
+    save () {
       const { form: { validateFields } } = this
       this.confirmLoading = true
       validateFields((errors, values) => {
         if (!errors) {
           console.log('values', values)
+          let params = {
+            unitlicense: this.delImage(this.unitlicense),
+            certificateHonors: this.delImage(this.certificateHonors),
+            environmentalFacilities: this.delImage(this.environmentalFacilities),
+            characteristicService: this.characteristicService,
+            siteFacilities: this.siteFacilities,
+            openingHours: [{
+						name: '营业时间',
+						id: 0,
+						weekRange: this.startWeek+'到'+this.endWeek,
+						timeRange: this.startTime+'至'+this.endTime,
+						farmInforId: null
+					}],
+					id: null
+          }
+          this.form.resetFields()
+          this.resetValues()
+          let formData = Object.assign({}, values, params)
+          console.log(formData)
+          this.$emit('farmAdd', formData)
           setTimeout(() => {
             this.visible = false
             this.confirmLoading = false
@@ -427,15 +490,35 @@ export default {
     handleCancel () {
       this.visible = false
     },
+    resetValues() {
+      this.unitlicense = []
+      this.certificateHonors = []
+      this.environmentalFacilities = []
+      this.characteristicService = []
+      this.siteFacilities = []
+      this.startWeek = '星期一'
+      this.endWeek = '星期日'
+      this.startTime = '00:00'
+      this.endTime = '23:59'
+    },
+    handlePreviewCancel() {
+      this.previewVisible = false
+    },
+    handlePreview (file) {
+      this.previewImage = file.url || file.thumbUrl
+      this.previewVisible = true
+    },
     moment,
     handleStartTime(time, timeString){
+      this.startTime = timeString
       console.log(time, timeString);
     },
     handleEndTime(time, timeString){
+      this.endTime = timeString
       console.log(time, timeString);
     },
     handleStartWeek(value, option) {
-      console.log(value)
+      // console.log(value)
       this.startNum = value
        if (this.startNum > this.endNum) {
         this.$message.warning('开始日期不能大于开始日期')
@@ -459,19 +542,11 @@ export default {
     },
     check() {
       this.visible = true
-      console.log(obj)
+      console.log(this.account)
     },
     handleProvinceChange(value) {
       this.cities = cityData[value]
       this.secondCity = cityData[value][0]
-    }, 
-    handleSubmit(e) {
-      e.preventDefault()
-      this.form.validateFieldsAndScroll((err, values) => {
-        if (!err) {
-          console.log('Received values of form: ', values)
-        }
-      })
     },
     handleConfirmBlur(e) {
       const value = e.target.value
@@ -492,9 +567,35 @@ export default {
       }
       callback()
     },
+    delImage(array) {
+      var newArray = []
+      newArray = array.map((item, index) => {
+        return {uid: String(item.id), url: BASE_URL + item.originalurl, thumburl: BASE_URL + item.thumburl}
+      })
+      return newArray
+    },
     edit(obj) {
       this.visible = true
-      console.log(obj)
+      // var array = this.account.environmentalFacilities.map((item, index) => {
+      //   return {uid: String(item.id), url: BASE_URL + item.originalurl, thumburl: BASE_URL + item.thumburl}
+      // })
+      this.environmentalFacilities = this.delImage(this.account.environmentalFacilities)
+      this.unitlicense = this.delImage(this.account.unitlicense)
+      this.certificateHonors = this.delImage(this.account.certificateHonors)
+      this.startWeek = this.account.openingHours[0].weekRange.substring(0, 3)
+      var timeStr = this.account.openingHours[0].timeRange
+      this.endWeek = this.account.openingHours[0].weekRange.substring(4, 7)
+      var timeArray = timeStr.split('至')
+      this.startTime = timeArray[0]
+      this.endTime = timeArray[1]
+      if (this.account.characteristicService.length > 0) {
+        this.characteristicService = this.account.characteristicService
+        this.showSpecail = true
+      }
+      if (this.account.characteristicService.length > 0) {
+        this.siteFacilities = this.account.siteFacilities
+        this.showPlace = true
+      }
     },
     handleWebsiteChange(value) {
       let autoCompleteResult
@@ -506,14 +607,16 @@ export default {
       this.autoCompleteResult = autoCompleteResult
     },
     confirmService (index) {
-      this.specialServices.splice(index, 1)
+      this.characteristicService.splice(index, 1)
+      this.specailValues.splice(index, 1)
       this.$message.success('删除成功')
     },
     cancelService (e) {
       this.$message.error('你取消了')
     },
     confirmPlace (index) {
-      this.placeItems.splice(index, 1)
+      this.siteFacilities.splice(index, 1)
+      this.placeValues.splice(index, 1)
       this.$message.success('删除成功')
     },
     cancelPlace (e) {

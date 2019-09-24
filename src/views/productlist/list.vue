@@ -20,7 +20,7 @@
       showPagination="auto"
     >
       <span slot="detail" slot-scope="text, obj">
-        <a @click="handleCheck(obj)">{{text}}</a>
+        <a @click="handleCheck(obj)">预览详情</a>
       </span>
       <span slot="action" slot-scope="text, obj">
         <template>
@@ -32,7 +32,7 @@
     </s-table>
     
     <create-form ref="createModal" :account="currentAccount" @close="onModalClose" @refresh="refresh" @ok="handleOk" />
-    <create-detail ref="createDetail" @ok="handleOk" />
+    <create-detail ref="createDetail" :account="detailInfo" @ok="handleOk" />
   </a-card>
 </template>
 
@@ -42,7 +42,7 @@ import { STable, Ellipsis } from '@/components'
 import StepByStepModal from './modules/StepByStepModal'
 import CreateForm from './modules/CreateProductForm'
 import CreateDetail from './modules/CreateProductDetail'
-import { productReview, getProductTotal, getProductList, deleteProduct } from '@/api/manage'
+import { productReview,getProductDetailById, getProductTotal, getProductList, deleteProduct } from '@/api/manage'
 
 export default {
   name: 'TableList',
@@ -63,6 +63,7 @@ export default {
       queryParam: {},
       productShow: true,
       currentAccount: null,
+      detailInfo: null,
       id: '',
       // 表头
       columns: [
@@ -194,14 +195,24 @@ export default {
       console.log('sss')
       this.$refs.table.clearSelected()
     },
-    handleEdit (record) {
+    async handleEdit (record) {
       console.log(record)
-      Object.assign(record, {action: 'edit'})
-      this.currentAccount = record
-      this.$refs.createModal.edit()
+      let _this = this
+      // Object.assign(record, {action: 'edit'})
+      // this.currentAccount = record
+      // this.$refs.createModal.edit() 
+      // console.log('sfsdfasf')
+       await getProductDetailById(record.id).then((res) => {
+        Object.assign(res, {action: 'edit'})
+         this.currentAccount = res
+      })
+      this.$refs.createModal.edit() 
     },
-    handleCheck() {
-      console.log(this.$refs.createDetail)
+    async handleCheck(record) {
+      // console.log(this.$refs.createDetail)
+      await getProductDetailById(record.id).then((res) => {
+         this.detailInfo = res
+      })
       this.$refs.createDetail.check()
     },
     handleOk () {
@@ -219,7 +230,7 @@ export default {
     },
     handleSuc(obj) {
       var params = {id: obj.id, review: true, remarks: ''}
-      Review(params).then((res) => {
+      productReview(params).then((res) => {
         console.log(res)
         if (res === true) {
           this.$success({

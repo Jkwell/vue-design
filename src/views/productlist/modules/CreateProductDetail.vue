@@ -10,10 +10,10 @@
   >
     <a-spin :spinning="confirmLoading">
       <div class="addlist">
-    <img src="../../../assets/bg.png" width="100%" height="200px" alt="">
+    <img src="../../../assets/timg.jpg" width="100%" alt="">
     <div class="title">
-      <div class="subtitle">嘉兴葡萄</div>
-      <div class="weight">规格(重/数量+单位)</div>
+      <div class="subtitle">{{account.name}}</div>
+      <div class="weight">{{account.specifications}}规格(重/数量+单位)</div>
     </div>
     <div class="rank-wrap">
       <div class="rankTitle">
@@ -31,8 +31,8 @@
           :required="false"
         >
           <a-input
-            value="1346464631313"
-            name="code"
+            :value="account.traceabilityBarCode"
+            name="traceabilityBarCode"
             disabled
           />
         </a-form-item>
@@ -43,8 +43,8 @@
           :required="false"
         >
           <a-input
-            name="time"
-            value="9月-10月"
+            name="timeToMarket"
+            :value="account.timeToMarket"
             disabled
           />
         </a-form-item>
@@ -55,8 +55,8 @@
           :required="false"
         >
           <a-input
-            name="eatTime"
-            value="30常温/60天冷藏"
+            name="consumptionPeriod"
+            :value="account.consumptionPeriod"
             disabled
           />
         </a-form-item>
@@ -98,43 +98,23 @@
     <div class="rank-wrap">
       <div class="productTitle">产地环境气候</div>
       <div class="weather"><span class="cd">产地</span>嘉兴市</div>
-      <img src="../../../assets/bg.png" width="100%" height="200px" alt="">
+      <img src="../../../assets/timg.jpg" width="100%" alt="">
     </div>
     <div class="rank-wrap" style="border: none;">
       <div class="productTitle">更多农产品</div>
       <div class="pictures">
         <div class="picture-item">
-          <div class="picture">
-            <img src="../../../assets/logo.png" width="100" height="100" alt="">
+          <div class="picture" v-for="(item, index) in productImages" :key="index">
+            <img :src="item.url" width="100" height="100" alt="">
           </div>
-          <div class="text">农产品</div>
-        </div>
-        <div class="picture-item">
-          <div class="picture">
-            <img src="../../../assets/logo.png" width="100" height="100" alt="">
-          </div>
-          <div class="text">农产品</div>
-        </div>
-        <div class="picture-item">
-          <div class="picture">
-            <img src="../../../assets/logo.png" width="100" height="100" alt="">
-          </div>
-          <div class="text">农产品</div>
-        </div>
-        <div class="picture-item">
-          <div class="picture">
-            <img src="../../../assets/logo.png" width="100" height="100" alt="">
-          </div> 
           <div class="text">农产品</div>
         </div>
       </div>
     </div>
     <div class="rank-wrap">
       <div class="productTitle">产品介绍</div>
-      <img src="../../../assets/bg.png" width="100%" alt="">
-      <div class="desc">
-        标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题
-        标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题
+      <img src="../../../assets/timg.jpg" width="100%" alt="">
+      <div class="desc" v-html="account.productDescription">
       </div>
     </div>
   </div>
@@ -144,6 +124,7 @@
 
 <script>
 import moment from 'moment'
+const BASE_URL = 'http://47.111.67.221:10000/'
 const provinceData = ['Zhejiang', 'Jiangsu']
 const cityData = {
   Zhejiang: ['Hangzhou', 'Ningbo', 'Wenzhou'],
@@ -184,6 +165,11 @@ const residences = [
   }
 ]
 export default {
+  props: {
+    account: {
+      type: Object
+    }
+  },
   data () {
     return {
       labelCol: {
@@ -215,6 +201,7 @@ export default {
       secondCity: cityData[provinceData[0]][0],
       confirmDirty: false,
       residences,
+      productImages: [],
       autoCompleteResult: [],
       formItemLayout: {
         labelCol: {
@@ -270,6 +257,10 @@ export default {
     },
     check() {
       this.visible = true
+      var array = this.account.images.map((item, index) => {
+        return {uid: String(item.id), url: BASE_URL + item.originalurl, thumburl: BASE_URL + item.thumburl}
+      })
+      this.productImages = array
     },
     handleProvinceChange(value) {
       this.cities = cityData[value]
@@ -410,6 +401,9 @@ export default {
       margin: 0 25px;
       text-align: center;
       margin-bottom: 20px;
+      .text{
+        margin-top: 10px;
+      }
     }
   }
   .desc{
