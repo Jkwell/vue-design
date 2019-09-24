@@ -8,7 +8,7 @@
     @cancel="handleCancel"
   >
     <a-spin :spinning="confirmLoading">
-       <a-form :form="form">
+       <a-form @submit="handleSubmit" :form="form">
       <a-tabs defaultActiveKey="2">
           <a-tab-pane key="2">
            
@@ -16,40 +16,53 @@
             
               <a-form-item
                 v-bind="formItemLayout"
-                label="行业"
+                label="农场名称"
+                :labelCol="{lg: {span: 7}, sm: {span: 7}}"
+                :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
+                has-feedback
+              >
+                <a-input
+                  v-decorator="[
+                    'name',
+                  ]"
+                    name="name"
+                    placeholder="请输入农场名称"
+                  />
+                  
+              </a-form-item>
+              <a-form-item
+                v-bind="formItemLayout"
+                label="农产品类别"
                 :labelCol="{lg: {span: 7}, sm: {span: 7}}"
                 :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
                 has-feedback
               >
                 <a-select
                   v-decorator="[
-                    'name',
-                    {rules: [{ required: true, message: '请输入行业名称' }]}
+                    'apCategory',
+                    {rules: [{ required: true, message: '请输入农产品类别' }]}
                   ]"
-                  placeholder="请输入行业名称"
+                  placeholder="请输入农产品类别"
                 >
                   <a-select-option value="水果">
                     水果
                   </a-select-option>
-                  <a-select-option value="电子">
-                    电子
+                  <a-select-option value="蔬菜">
+                    蔬菜
+                  </a-select-option>
+                  <a-select-option value="水产">
+                    水产
+                  </a-select-option>
+                  <a-select-option value="禽类">
+                    禽类
+                  </a-select-option>
+                  <a-select-option value="特种养殖">
+                    特种养殖
+                  </a-select-option>
+                  <a-select-option value="五谷杂粮">
+                    五谷杂粮
                   </a-select-option>
                 </a-select>
-              </a-form-item>
-              <a-form-item
-                label="农产品类别"
-                :labelCol="{lg: {span: 7}, sm: {span: 7}}"
-                :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
-                :required="true"
-              >
-                <a-input
-                  v-decorator="[
-                  'apCategory',
-                  {rules: [{ required: true, message: '请输入农产品类别' }]}
-                ]"
-                  name="apCategory"
-                  placeholder="请输入农产品类别"
-                />
               </a-form-item>
               <a-form-item
                 label="环境设施"
@@ -60,7 +73,7 @@
                   listType="picture-card"
                   :defaultFileList="environmentalFacilities"
                   class="upload-list-inline"
-                  @change="environmentChange"
+                  @change="uploadImage($event, 'enviroment')"
                 >
                   <a-button>
                     <a-icon type="upload" /> upload
@@ -76,7 +89,7 @@
                   listType="picture-card"
                   :defaultFileList="certificateHonors"
                   class="upload-list-inline"
-                  @change="honorChange"
+                  @change="uploadImage($event, 'honor')"
                 >
                   <a-button>
                     <a-icon type="upload" /> upload
@@ -92,7 +105,7 @@
                   listType="picture-card"
                   :defaultFileList="unitlicense"
                   class="upload-list-inline"
-                  @change="unitChange"
+                  @change="uploadImage($event, 'unit')"
                 >
                   <a-button>
                     <a-icon type="upload" /> upload
@@ -108,26 +121,26 @@
               >
                 <a-row :gutter="8">
                   <a-col :span="11">
-                  <a-select defaultValue="1"  @change="handleStartWeek">
-                    <a-select-option value="1">星期一</a-select-option>
-                    <a-select-option value="2">星期二</a-select-option>
+                  <a-select :defaultValue="startWeek" :value="startWeek"  @change="handleStartWeek">
+                    <a-select-option :value="index" v-for="(item,index) in week" :key="index">{{week[index]}}</a-select-option>
+                    <!-- <a-select-option value="2">星期二</a-select-option>
                     <a-select-option value="3">星期三</a-select-option>
                     <a-select-option value="4">星期四</a-select-option>
                     <a-select-option value="5">星期五</a-select-option>
                     <a-select-option value="6">星期六</a-select-option>
-                    <a-select-option value="7">星期日</a-select-option>
+                    <a-select-option value="7">星期日</a-select-option> -->
                   </a-select>
                   </a-col>
                   <a-col :span="2">---</a-col>
                   <a-col :span="11">
-                   <a-select defaultValue="1"  @change="handleEndWeek">
-                    <a-select-option value="1">星期一</a-select-option>
-                    <a-select-option value="2">星期二</a-select-option>
+                   <a-select :defaultValue="endWeek" :value="endWeek"  @change="handleEndWeek">
+                    <a-select-option :value="index" v-for="(item,index) in week" :key="index">{{week[index]}}</a-select-option>
+                    <!-- <a-select-option value="2">星期二</a-select-option>
                     <a-select-option value="3">星期三</a-select-option>
                     <a-select-option value="4">星期四</a-select-option>
                     <a-select-option value="5">星期五</a-select-option>
                     <a-select-option value="6">星期六</a-select-option>
-                    <a-select-option value="7">星期日</a-select-option>
+                    <a-select-option value="7">星期日</a-select-option> -->
                   </a-select>
                   </a-col>
                   </a-row>
@@ -148,7 +161,7 @@
                 :required="false"
               >
                 <a-row type="flex" v-if="showSpecail">
-                  <a-col style="position: relative;" v-for="(item, index) in characteristicService" :key="index"><a style="margin-right: 6px;backgournd:#fff;border:1px solid #d9d9d9;color:rgba(0, 0, 0, 0.65);border-radius: 4px; padding: 6px 15px; line-height: 32px;">{{item.name}}</a><a-popconfirm title="确定要删除这一项吗?" @confirm="confirmService(index)" @cancel="cancelService" okText="Yes" cancelText="No"><a-icon type="close-circle" style="color: red; position: absolute; right: 0; cursor: pointer" /></a-popconfirm></a-col>
+                  <a-col style="position: relative;" v-for="(item, index) in specialServices" :key="index"><a style="margin-right: 6px;backgournd:#fff;border:1px solid #d9d9d9;color:rgba(0, 0, 0, 0.65);border-radius: 4px; padding: 6px 15px; line-height: 32px;">{{item.name}}</a><a-popconfirm title="确定要删除这一项吗?" @confirm="confirmService(index)" @cancel="cancelService" okText="Yes" cancelText="No"><a-icon type="close-circle" style="color: red; position: absolute; right: 0; cursor: pointer" /></a-popconfirm></a-col>
                 </a-row>
                 <a-row type="flex">
                     <a-col><a style="margin-right: 6px;backgournd:#fff;border:1px solid #d9d9d9;color:rgba(0, 0, 0, 0.65);border-radius: 4px; padding: 6px 15px; line-height: 32px;">自定义</a></a-col>
@@ -171,7 +184,7 @@
                 :required="false"
               >
                 <a-row type="flex" v-if="showPlace">
-                  <a-col style="position: relative;" v-for="(item, index) in siteFacilities" :key="index"><a style="margin-right: 6px;backgournd:#fff;border:1px solid #d9d9d9;color:rgba(0, 0, 0, 0.65);border-radius: 4px; padding: 6px 15px; line-height: 32px;">{{item.name}}</a><a-popconfirm title="确定要删除这一项吗?" @confirm="confirmPlace(index)" @cancel="cancelPlace" okText="Yes" cancelText="No"><a-icon type="close-circle" style="color: red; position: absolute; right: 0; cursor: pointer" /></a-popconfirm></a-col>
+                  <a-col style="position: relative;" v-for="(item, index) in placeItems" :key="index"><a style="margin-right: 6px;backgournd:#fff;border:1px solid #d9d9d9;color:rgba(0, 0, 0, 0.65);border-radius: 4px; padding: 6px 15px; line-height: 32px;">{{item.name}}</a><a-popconfirm title="确定要删除这一项吗?" @confirm="confirmPlace(index)" @cancel="cancelPlace" okText="Yes" cancelText="No"><a-icon type="close-circle" style="color: red; position: absolute; right: 0; cursor: pointer" /></a-popconfirm></a-col>
                 </a-row>
                 <a-row type="flex">
                     <a-col><a style="margin-right: 6px;backgournd:#fff;border:1px solid #d9d9d9;color:rgba(0, 0, 0, 0.65);border-radius: 4px; padding: 6px 15px; line-height: 32px;">自定义</a></a-col>
@@ -188,7 +201,7 @@
                 </a-row>
               </a-form-item>
               <a-form-item>
-                <a-row type="flex" justify="end"><a-button type="primary" @click="save">保存</a-button></a-row>
+                <a-row type="flex" justify="end"><a-button type="primary" html-type="submit">保存</a-button></a-row>
                 
               </a-form-item>
            
@@ -251,16 +264,19 @@ export default {
         xs: { span: 24 },
         sm: { span: 13 }
       },
-      unitlicense: [],
-      certificateHonors: [],
-      environmentalFacilities: [],
-      siteFacilities: [],
-      characteristicService: [],
       visible: false,
       confirmLoading: false,
       selected: [],
       confirmDirty: false,
+      week: ['星期一','星期二','星期三','星期四','星期五','星期六','星期日'],
       residences,
+      unitlicense: [],
+      certificateHonors: [],
+      environmentalFacilities: [],
+      startWeek: '星期一',
+      startNum: 0,
+      endWeek: '星期日',
+      endNum: 6,
       autoCompleteResult: [],
       showPlace: false,
       showSpecail: false,
@@ -347,23 +363,22 @@ export default {
         });
       } else {
         this.placeValues.push(value)
-        this.siteFacilities.push({name: value})
+        this.placeItems.push({name: value})
         this.showPlace = true
         this.form.resetFields(['place'])
       }
     },
+    uploadImage(e, type) {
+      if (type === 'enviroment') {
+        this.environmentalFacilities = e.fileList
+      } else if (type === 'honor') {
+        this.certificateHonors = e.fileList
+      } else if (type === 'unit') {
+        this.unitlicense = e.fileList
+      }
+    },
     del(index) {
       console.log(index)
-    },
-    environmentChange(value) {
-      console.log(value)
-      this.environmentalFacilities = value.fileList
-    },
-    honorChange(value) {
-      this.certificateHonors = value.fileList
-    },
-    unitChange(value) {
-      this.unitlicense = value.fileList
     },
     addService() {
       let _this = this
@@ -382,7 +397,7 @@ export default {
         });
       } else {
         this.specailValues.push(value)
-        this.characteristicService.push({name: value})
+        this.specialServices.push({name: value})
         this.showSpecail = true
         this.form.resetFields(['service'])
       }
@@ -390,21 +405,20 @@ export default {
     cityChange(e) {
       console.log(e)
     },
-    save() {
+    handleSubmit () {
       const { form: { validateFields } } = this
       this.confirmLoading = true
       validateFields((errors, values) => {
-         console.log('values', values)
-        // if (!errors) {
-        //   console.log('values', values)
-        //   // setTimeout(() => {
-        //   //   this.visible = false
-        //   //   this.confirmLoading = false
-        //   //   this.$emit('ok', values)
-        //   // }, 1500)
-        // } else {
-        //   this.confirmLoading = false
-        // }
+        if (!errors) {
+          console.log('values', values)
+          setTimeout(() => {
+            this.visible = false
+            this.confirmLoading = false
+            this.$emit('ok', values)
+          }, 1500)
+        } else {
+          this.confirmLoading = false
+        }
       })
     },
     handleChange() {
@@ -421,9 +435,26 @@ export default {
       console.log(time, timeString);
     },
     handleStartWeek(value, option) {
-      console.log(value, option)
+      console.log(value)
+      this.startNum = value
+       if (this.startNum > this.endNum) {
+        this.$message.warning('开始日期不能大于开始日期')
+        return
+      } else {
+        this.startWeek = this.week[value]
+      }
+      console.log(this.startWeek);
     },
     handleEndWeek(value, option) {
+      this.endNum = value
+      if (this.startNum > this.endNum) {
+        this.$message.warning('结束日期不能小于开始日期')
+        return
+      } else {
+        this.endWeek = this.week[value]
+      }
+      
+      console.log(this.endWeek);
       console.log(value, option)
     },
     check() {
@@ -434,6 +465,14 @@ export default {
       this.cities = cityData[value]
       this.secondCity = cityData[value][0]
     }, 
+    handleSubmit(e) {
+      e.preventDefault()
+      this.form.validateFieldsAndScroll((err, values) => {
+        if (!err) {
+          console.log('Received values of form: ', values)
+        }
+      })
+    },
     handleConfirmBlur(e) {
       const value = e.target.value
       this.confirmDirty = this.confirmDirty || !!value
