@@ -8,7 +8,7 @@
     @cancel="handleCancel"
   >
     <a-spin :spinning="confirmLoading">
-       <a-form @submit="handleSubmit" :form="form">
+       <a-form :form="form">
       <a-tabs defaultActiveKey="2">
           <a-tab-pane key="2">
            
@@ -23,15 +23,15 @@
               >
                 <a-select
                   v-decorator="[
-                    'select',
+                    'name',
                     {rules: [{ required: true, message: '请输入行业名称' }]}
                   ]"
                   placeholder="请输入行业名称"
                 >
-                  <a-select-option value="china">
+                  <a-select-option value="水果">
                     水果
                   </a-select-option>
-                  <a-select-option value="usa">
+                  <a-select-option value="电子">
                     电子
                   </a-select-option>
                 </a-select>
@@ -44,10 +44,10 @@
               >
                 <a-input
                   v-decorator="[
-                  'check',
+                  'apCategory',
                   {rules: [{ required: true, message: '请输入农产品类别' }]}
                 ]"
-                  name="check"
+                  name="apCategory"
                   placeholder="请输入农产品类别"
                 />
               </a-form-item>
@@ -57,10 +57,10 @@
                 :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
               >
                 <a-upload
-                  action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                   listType="picture-card"
-                  :defaultFileList="fileList"
+                  :defaultFileList="environmentalFacilities"
                   class="upload-list-inline"
+                  @change="environmentChange"
                 >
                   <a-button>
                     <a-icon type="upload" /> upload
@@ -73,10 +73,10 @@
                 :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
               >
                 <a-upload
-                  action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                   listType="picture-card"
-                  :defaultFileList="fileList"
+                  :defaultFileList="certificateHonors"
                   class="upload-list-inline"
+                  @change="honorChange"
                 >
                   <a-button>
                     <a-icon type="upload" /> upload
@@ -89,10 +89,10 @@
                 :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
               >
                 <a-upload
-                  action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                   listType="picture-card"
-                  :defaultFileList="fileList"
+                  :defaultFileList="unitlicense"
                   class="upload-list-inline"
+                  @change="unitChange"
                 >
                   <a-button>
                     <a-icon type="upload" /> upload
@@ -148,7 +148,7 @@
                 :required="false"
               >
                 <a-row type="flex" v-if="showSpecail">
-                  <a-col style="position: relative;" v-for="(item, index) in specialServices" :key="index"><a style="margin-right: 6px;backgournd:#fff;border:1px solid #d9d9d9;color:rgba(0, 0, 0, 0.65);border-radius: 4px; padding: 6px 15px; line-height: 32px;">{{item.name}}</a><a-popconfirm title="确定要删除这一项吗?" @confirm="confirmService(index)" @cancel="cancelService" okText="Yes" cancelText="No"><a-icon type="close-circle" style="color: red; position: absolute; right: 0; cursor: pointer" /></a-popconfirm></a-col>
+                  <a-col style="position: relative;" v-for="(item, index) in characteristicService" :key="index"><a style="margin-right: 6px;backgournd:#fff;border:1px solid #d9d9d9;color:rgba(0, 0, 0, 0.65);border-radius: 4px; padding: 6px 15px; line-height: 32px;">{{item.name}}</a><a-popconfirm title="确定要删除这一项吗?" @confirm="confirmService(index)" @cancel="cancelService" okText="Yes" cancelText="No"><a-icon type="close-circle" style="color: red; position: absolute; right: 0; cursor: pointer" /></a-popconfirm></a-col>
                 </a-row>
                 <a-row type="flex">
                     <a-col><a style="margin-right: 6px;backgournd:#fff;border:1px solid #d9d9d9;color:rgba(0, 0, 0, 0.65);border-radius: 4px; padding: 6px 15px; line-height: 32px;">自定义</a></a-col>
@@ -171,7 +171,7 @@
                 :required="false"
               >
                 <a-row type="flex" v-if="showPlace">
-                  <a-col style="position: relative;" v-for="(item, index) in placeItems" :key="index"><a style="margin-right: 6px;backgournd:#fff;border:1px solid #d9d9d9;color:rgba(0, 0, 0, 0.65);border-radius: 4px; padding: 6px 15px; line-height: 32px;">{{item.name}}</a><a-popconfirm title="确定要删除这一项吗?" @confirm="confirmPlace(index)" @cancel="cancelPlace" okText="Yes" cancelText="No"><a-icon type="close-circle" style="color: red; position: absolute; right: 0; cursor: pointer" /></a-popconfirm></a-col>
+                  <a-col style="position: relative;" v-for="(item, index) in siteFacilities" :key="index"><a style="margin-right: 6px;backgournd:#fff;border:1px solid #d9d9d9;color:rgba(0, 0, 0, 0.65);border-radius: 4px; padding: 6px 15px; line-height: 32px;">{{item.name}}</a><a-popconfirm title="确定要删除这一项吗?" @confirm="confirmPlace(index)" @cancel="cancelPlace" okText="Yes" cancelText="No"><a-icon type="close-circle" style="color: red; position: absolute; right: 0; cursor: pointer" /></a-popconfirm></a-col>
                 </a-row>
                 <a-row type="flex">
                     <a-col><a style="margin-right: 6px;backgournd:#fff;border:1px solid #d9d9d9;color:rgba(0, 0, 0, 0.65);border-radius: 4px; padding: 6px 15px; line-height: 32px;">自定义</a></a-col>
@@ -188,7 +188,7 @@
                 </a-row>
               </a-form-item>
               <a-form-item>
-                <a-row type="flex" justify="end"><a-button type="primary" html-type="submit">保存</a-button></a-row>
+                <a-row type="flex" justify="end"><a-button type="primary" @click="save">保存</a-button></a-row>
                 
               </a-form-item>
            
@@ -251,26 +251,14 @@ export default {
         xs: { span: 24 },
         sm: { span: 13 }
       },
-      fileList: [{
-        uid: '-1',
-        name: 'xxx.png',
-        status: 'done',
-        url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        thumbUrl: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-      }, {
-        uid: '-2',
-        name: 'yyy.png',
-        status: 'done',
-        url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        thumbUrl: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-      }],
+      unitlicense: [],
+      certificateHonors: [],
+      environmentalFacilities: [],
+      siteFacilities: [],
+      characteristicService: [],
       visible: false,
       confirmLoading: false,
-      provinceData,
-      cityData,
       selected: [],
-      cities: cityData[provinceData[0]],
-      secondCity: cityData[provinceData[0]][0],
       confirmDirty: false,
       residences,
       autoCompleteResult: [],
@@ -359,13 +347,23 @@ export default {
         });
       } else {
         this.placeValues.push(value)
-        this.placeItems.push({name: value})
+        this.siteFacilities.push({name: value})
         this.showPlace = true
         this.form.resetFields(['place'])
       }
     },
     del(index) {
       console.log(index)
+    },
+    environmentChange(value) {
+      console.log(value)
+      this.environmentalFacilities = value.fileList
+    },
+    honorChange(value) {
+      this.certificateHonors = value.fileList
+    },
+    unitChange(value) {
+      this.unitlicense = value.fileList
     },
     addService() {
       let _this = this
@@ -384,7 +382,7 @@ export default {
         });
       } else {
         this.specailValues.push(value)
-        this.specialServices.push({name: value})
+        this.characteristicService.push({name: value})
         this.showSpecail = true
         this.form.resetFields(['service'])
       }
@@ -392,20 +390,21 @@ export default {
     cityChange(e) {
       console.log(e)
     },
-    handleSubmit () {
+    save() {
       const { form: { validateFields } } = this
       this.confirmLoading = true
       validateFields((errors, values) => {
-        if (!errors) {
-          console.log('values', values)
-          setTimeout(() => {
-            this.visible = false
-            this.confirmLoading = false
-            this.$emit('ok', values)
-          }, 1500)
-        } else {
-          this.confirmLoading = false
-        }
+         console.log('values', values)
+        // if (!errors) {
+        //   console.log('values', values)
+        //   // setTimeout(() => {
+        //   //   this.visible = false
+        //   //   this.confirmLoading = false
+        //   //   this.$emit('ok', values)
+        //   // }, 1500)
+        // } else {
+        //   this.confirmLoading = false
+        // }
       })
     },
     handleChange() {
@@ -435,14 +434,6 @@ export default {
       this.cities = cityData[value]
       this.secondCity = cityData[value][0]
     }, 
-    handleSubmit(e) {
-      e.preventDefault()
-      this.form.validateFieldsAndScroll((err, values) => {
-        if (!err) {
-          console.log('Received values of form: ', values)
-        }
-      })
-    },
     handleConfirmBlur(e) {
       const value = e.target.value
       this.confirmDirty = this.confirmDirty || !!value
