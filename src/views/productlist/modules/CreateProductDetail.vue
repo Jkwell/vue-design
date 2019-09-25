@@ -9,7 +9,7 @@
     @cancel="handleCancel"
   >
     <a-spin :spinning="confirmLoading">
-      <div class="addlist">
+      <div class="addlist" v-if="account">
     <img src="../../../assets/timg.jpg" width="100%" alt="">
     <div class="title">
       <div class="subtitle">{{account.name}}</div>

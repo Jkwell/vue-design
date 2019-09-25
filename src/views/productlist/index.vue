@@ -11,7 +11,7 @@
     <s-table
       ref="table"
       size="default"
-      rowKey="key"
+      rowKey= record
       :columns="columns"
       :data="loadData"
       :getFarmTotals="total"
@@ -30,7 +30,7 @@
       </span>
     </s-table>
     
-    <create-form ref="createModal" :account="currentAccount" @close="onModalClose" @ok="handleOk" @farmAdd="farmAdd"/>
+    <create-form ref="createModal" :account="currentAccount" @close="onModalClose" @farmModify="modifyFarm" @ok="handleOk" @farmAdd="farmAdd"/>
   </a-card>
 </template>
 
@@ -39,8 +39,43 @@ import moment from 'moment'
 import { STable, Ellipsis } from '@/components'
 import StepByStepModal from './modules/StepByStepModal'
 import CreateForm from './modules/CreateForm'
-import {getFarmList,getFarmDetail, getFarmTotal,farmAdd, FarmReview,deletFarm } from '@/api/manage'
-
+import {getFarmList,farmModify,getFarmDetail, getFarmTotal,farmAdd, FarmReview,deletFarm } from '@/api/manage'
+const modify = {"farmInforImages": [
+    {
+      "id": 0
+    }
+  ],
+  "unitlicense": [
+    {
+      "id": 0
+    }
+  ],
+  "environmentalFacilities": [
+    {
+      "id": 0
+    }
+  ],
+  "certificateHonors": [
+    {
+      "id": 0
+    }
+  ],
+  "officialCertifications": [
+    {
+      "id": 0
+    }
+  ],
+  "thirdPartyTestings": [
+    {
+      "id": 0
+    }
+  ],
+  "ratings": [
+    {
+      "id": 0
+    }
+  ]
+}
 export default {
   name: 'TableList',
   components: {
@@ -59,6 +94,7 @@ export default {
       // 查询参数
       queryParam: {},
       currentAccount: null,
+      id: '',
       // 表头
       columns: [  
         {
@@ -152,6 +188,15 @@ export default {
         }
       })
     },
+    modifyFarm(obj) {
+      console.log(obj)
+      let modifyParmas = Object.assign(obj, {id: this.id, certificateHonors: [], environmentalFacilities:[], unitlicense: []})
+      let parameter = {'updateFarmInfor': modifyParmas, ...modify}
+      console.log(parameter)
+      farmModify(this.id, parameter).then((res) => {
+        console.log(res)
+      })
+    },
     del() {
       let _this = this
       console.log(_this.selectedRowKeys)
@@ -193,6 +238,7 @@ export default {
     },
     async handleEdit (record) {
        console.log(record)
+      this.id = record.id
       let _this = this
       // Object.assign(record, {action: 'edit'})
       // this.currentAccount = record

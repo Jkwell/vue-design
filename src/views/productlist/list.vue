@@ -31,7 +31,7 @@
       </span>
     </s-table>
     
-    <create-form ref="createModal" :account="currentAccount" @close="onModalClose" @refresh="refresh" @ok="handleOk" />
+    <create-form ref="createModal" :account="currentAccount" @productModify="modifyProduct" @close="onModalClose" @refresh="refresh" @ok="handleOk" />
     <create-detail ref="createDetail" :account="detailInfo" @ok="handleOk" />
   </a-card>
 </template>
@@ -42,7 +42,7 @@ import { STable, Ellipsis } from '@/components'
 import StepByStepModal from './modules/StepByStepModal'
 import CreateForm from './modules/CreateProductForm'
 import CreateDetail from './modules/CreateProductDetail'
-import { productReview,getProductDetailById, getProductTotal, getProductList, deleteProduct } from '@/api/manage'
+import { productReview, productModify, getProductDetailById, getProductTotal, getProductList, deleteProduct } from '@/api/manage'
 
 export default {
   name: 'TableList',
@@ -63,6 +63,7 @@ export default {
       queryParam: {},
       productShow: true,
       currentAccount: null,
+      id: '',
       detailInfo: null,
       id: '',
       // 表头
@@ -144,6 +145,15 @@ export default {
       this.currentAccount = null
       this.visible = false
     },
+    modifyProduct(obj) {
+      console.log(obj)
+      let modifyParmas = Object.assign(obj, {id: this.id, images: [], farmInforId: '1'})
+      let parameter = {'updateAgriculturalProduct': modifyParmas, "deleteImages": [{"id": 0}]}
+      console.log(parameter)
+      productModify(this.id, parameter).then((res) => {
+        console.log(res)
+      })
+    },
     del() {
       let _this = this
       var selectRows = _this.selectedRows
@@ -196,6 +206,7 @@ export default {
       this.$refs.table.clearSelected()
     },
     async handleEdit (record) {
+      this.id = record.id
       console.log(record)
       let _this = this
       // Object.assign(record, {action: 'edit'})

@@ -8,7 +8,7 @@
     @cancel="handleCancel(false)"
   >
     <a-spin :spinning="confirmLoading">
-      <a-form @submit="handleSubmit" :form="form">
+      <a-form :form="form">
         <a-form-item
           label="产品名称"
           :labelCol="{lg: {span: 7}, sm: {span: 7}}"
@@ -136,7 +136,7 @@
           </a-select>
           </a-col>
           <a-col :span="8">
-            <a-input-number v-decorator="['time', {initialValue: time ? time : 1, rules: [{ required: true, message: '请输入天数' }]}]" :min="1" :max="10" @change="onChange" />天
+            <a-input-number v-decorator="['time', {initialValue: time ? time : '', rules: [{ required: true, message: '请输入天数' }]}]" :min="1" :max="10" @change="onChange" />天
           </a-col>
           
           </a-row>
@@ -237,7 +237,7 @@
         </a-form-item>
         <a-row><div class="line" style="height:1px;width:100%;background:#ccc;margin:30px 0 15px 0;"></div></a-row>
         <a-form-item :wrapperCol="{ span: 24 }" style="text-align: right;margin-right:25px">
-          <a-button htmlType="submit" type="primary">提交</a-button>
+          <a-button @click="save" type="primary">提交</a-button>
           <a-button style="margin-left: 8px" @click="cancel">取消</a-button>
         </a-form-item>
       </a-form>
@@ -269,7 +269,14 @@ export default {
         xs: { span: 24 },
         sm: { span: 13 }
       },
-      fileList: [],
+      fileList: [
+        {
+        uid: '-1',
+        name: 'xxx.png',
+        status: 'done',
+        url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+      }
+      ],
       startDate: '',
       endDate: '',
       consumption: '',
@@ -355,36 +362,38 @@ export default {
     handlePreviewCancel() {
       this.previewVisible = false
     },
-    handleSubmit(e) {
+    save(e) {
       let _this = this
       e.preventDefault()
+      this.confirmLoading = true
       this.form.validateFieldsAndScroll((err, values) => {
         console.log(this.account)
         if (!err) {
-          if (this.account !== null && this.account.action === 'edit') {
-                 const upValues = {...values, id: '100'}
-                 modifyProduct(upValues).then((res) => {
-                   _this.$message.success('修改成功');   
-                   this.form.resetFields()
-                   this.$emit('close') 
-                   this.visible = false
-                    this.$emit('refresh')
-                 })
-               } else {
-           addOne(values).then((res) => {
-             console.log('zhengai')
-             if (res.success === true) {
-               console.log('xxxxx')
-               _this.$message.success('添加成功'); 
-               this.form.resetFields()
-               this.$emit('close')  
-               this.visible = false
-               this.$emit('refresh')
-             }
-           })
-        }
+
+       
+        let params = {
+            timeToMarket: this.startDate + '-'+ this.endDate,
+            consumptionPeriod: this.consumption + this.time
+          }
+          this.form.resetFields()
+          this.resetValues()
+          let formData = Object.assign({}, values, params)
+          console.log(formData)
           console.log('Received values of form: ', values)
-        }
+          if (this.account.action === 'edit') {
+            console.log('sssss===========')
+            this.$emit('productModify', formData)
+          } else {
+            this.$emit('productAdd', formData)
+          }
+          setTimeout(() => {
+            this.visible = false
+            this.confirmLoading = false
+            this.$emit('ok', values)
+          }, 1500)
+         } else {
+            this.confirmLoading = false
+         }
       })
     },
     handleConfirmBlur(e) {
@@ -409,7 +418,7 @@ export default {
     edit() {
       this.visible = true
       var array = this.account.images.map((item, index) => {
-        return {uid: String(item.id), url: BASE_URL + item.originalurl, thumburl: BASE_URL + item.thumburl}
+        return {uid: String(item.id),name: index +'.png', url: BASE_URL + item.originalurl, thumburl: BASE_URL + item.thumburl}
       })
       this.fileList = array
       console.log(this.fileList)

@@ -443,7 +443,7 @@ export default {
     delImage(array) {
       let newArray = []
       array.forEach((item, index) => {
-        newArray.push({type: 'image', fileName: index + '.png', base64String: item.thumbUrl}) 
+        newArray.push({type: 'image', name: index +'.png', fileName: index + '.png', base64String: item.thumbUrl}) 
         return newArray
       })
       return newArray
@@ -473,7 +473,12 @@ export default {
           this.resetValues()
           let formData = Object.assign({}, values, params)
           console.log(formData)
-          this.$emit('farmAdd', formData)
+          if (this.account.action === 'edit') {
+            console.log('sssss===========')
+            this.$emit('farmModify', formData)
+          } else {
+            this.$emit('farmAdd', formData)
+          }
           setTimeout(() => {
             this.visible = false
             this.confirmLoading = false
@@ -573,7 +578,7 @@ export default {
     delImage(array) {
       var newArray = []
       newArray = array.map((item, index) => {
-        return {uid: String(item.id), url: BASE_URL + item.originalurl, thumburl: BASE_URL + item.thumburl}
+        return {uid: String(item.id),name: index +'.png', url: BASE_URL + item.originalurl, thumburl: BASE_URL + item.thumburl}
       })
       return newArray
     },

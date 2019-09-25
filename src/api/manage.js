@@ -5,11 +5,13 @@ const api = {
   farm: BASE_URL + '/api/FarmInfor/List/total/Paginated',
   farmTotal: BASE_URL + '/api/FarmInfor/Homepage/total',
   farmAdd: BASE_URL + '/api/FarmInfor',
+  farmModify: BASE_URL + '/api/FarmInfor/',
   farmReview: BASE_URL + '/api/FarmInfor/Review',
   productReview: BASE_URL + '/api/AgriculturalProduct/Review',
   farmDelete: BASE_URL + '/api/FarmInfor',
   productDelete: BASE_URL + '/api/AgriculturalProduct/BatchDel',
   getProductList: BASE_URL + '/api/AgriculturalProduct/',
+  prodocutModify: BASE_URL + '/api/AgriculturalProduct/',
   getFarmDetail: BASE_URL + '/api/FarmInfor/',
   wxSurvey: BASE_URL + '/api/WeChatSurvey',
   user: '/user',
@@ -51,6 +53,22 @@ export function farmAdd (params) {
 export function FarmReview (params) {
   return axios({
     url: api.farmReview,
+    method: 'put',
+    data: params
+  })
+}
+export function farmModify (id, params) {
+  var url = api.farmModify + id
+  return axios({
+    url: url,
+    method: 'put',
+    data: params
+  })
+}
+export function productModify (id, params) {
+  var url = api.prodocutModify + id
+  return axios({
+    url: url,
     method: 'put',
     data: params
   })
