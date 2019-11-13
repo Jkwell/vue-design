@@ -39,7 +39,7 @@ import moment from 'moment'
 import { STable, Ellipsis } from '@/components'
 import StepByStepModal from './modules/StepByStepModal'
 import CreateForm from './modules/CreateForm'
-import {getFarmList,farmModify,getFarmDetail, getFarmTotal,farmAdd, FarmReview,deletFarm } from '@/api/manage'
+import {getFarmList,farmModify,getFarmDetail, getGd, getFarmTotal,farmAdd, FarmReview,deletFarm } from '@/api/manage'
 const modify = {"farmInforImages": [
     {
       "id": 0
@@ -155,11 +155,14 @@ export default {
   },
   created () {
     this.tableOption()
+    getGd({key: 'fb9ca2f8fc4296e0a2831f98861a6179',keywords: '',subdistrict: "3",extensions: 'base'}).then((res) => {
+      console.log(res)
+    })
   },
   methods: {
     handleSuc(obj) {
       var params = {id: obj.id, review: true, remarks: ''}
-      Review(params).then((res) => {
+      FarmReview(params).then((res) => {
         if (res === true) {
           this.$success({
             title: '提示',
@@ -181,6 +184,7 @@ export default {
         }
     },
     farmAdd(obj) {
+      console.log(obj)
       farmAdd(obj, (res) => {
         console.log(res)
         if (res === true) {

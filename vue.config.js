@@ -65,6 +65,11 @@ const vueConfig = {
         target: 'http://47.111.67.221:10000',
         changeOrigin: true,
         pathRewrite: { '^/UserIdentity': '/UserIdentity' }
+      },
+      '/config': {
+        target: 'https://restapi.amap.com/v3',
+        changeOrigin: true,
+        pathRewrite: { '^/config': '/config' }
       }
     }
   },

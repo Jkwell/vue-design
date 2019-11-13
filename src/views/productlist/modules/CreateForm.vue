@@ -34,6 +34,42 @@
               </a-form-item>
               <a-form-item
                 v-bind="formItemLayout"
+                label="地理位置"
+                :labelCol="{lg: {span: 7}, sm: {span: 7}}"
+                :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
+                has-feedback
+              >
+                <a-input
+                  v-decorator="[
+                    'geographical',{
+                      initialValue: account && account.geographical
+                    }
+                  ]"
+                    name="geographical"
+                    placeholder="请输入地理位置"
+                  />
+                  
+              </a-form-item>
+              <a-form-item
+                v-bind="formItemLayout"
+                label="位置"
+                :labelCol="{lg: {span: 7}, sm: {span: 7}}"
+                :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
+                has-feedback
+              >
+                <a-input
+                  v-decorator="[
+                    'location',{
+                      initialValue: account && account.location
+                    }
+                  ]"
+                    name="location"
+                    placeholder="请输入位置"
+                  />
+                  
+              </a-form-item>
+              <a-form-item
+                v-bind="formItemLayout"
                 label="农产品类别"
                 :labelCol="{lg: {span: 7}, sm: {span: 7}}"
                 :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
@@ -221,6 +257,24 @@
                   <a-col :offset="1"><a-button @click="addPlace" type="primary" size="small">添加</a-button></a-col>
                 </a-row>
               </a-form-item>
+              <a-form-item
+                v-bind="formItemLayout"
+                label="店铺介绍"
+                :labelCol="{lg: {span: 7}, sm: {span: 7}}"
+                :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
+                has-feedback
+              >
+                <a-input
+                  v-decorator="[
+                    'storeIntroduction',{
+                      initialValue: account && account.storeIntroduction
+                    }
+                  ]"
+                    name="storeIntroduction"
+                    placeholder="请输入店铺介绍"
+                  />
+                  
+              </a-form-item>
               <a-form-item>
                 <a-row type="flex" justify="end"><a-button type="primary" @click="save">保存</a-button></a-row>
                 
@@ -405,7 +459,9 @@ export default {
     },
     uploadImage(e, type) {
       if (type === 'enviroment') {
+        console.log('sssssssssssssssssss===========')
         this.environmentalFacilities = e.fileList
+        console.log(this.environmentalFacilities)
       } else if (type === 'honor') {
         this.certificateHonors = e.fileList
       } else if (type === 'unit') {
@@ -440,9 +496,10 @@ export default {
     cityChange(e) {
       console.log(e)
     },
-    delImage(array) {
+    ChangeImage(array) {
       let newArray = []
       array.forEach((item, index) => {
+		  console.log(item)
         newArray.push({type: 'image', name: index +'.png', fileName: index + '.png', base64String: item.thumbUrl}) 
         return newArray
       })
@@ -454,10 +511,11 @@ export default {
       validateFields((errors, values) => {
         if (!errors) {
           console.log('values', values)
+          console.log(this.ChangeImage(this.unitlicense))
           let params = {
-            unitlicense: this.delImage(this.unitlicense),
-            certificateHonors: this.delImage(this.certificateHonors),
-            environmentalFacilities: this.delImage(this.environmentalFacilities),
+            unitlicense: this.ChangeImage(this.unitlicense),
+            certificateHonors: this.ChangeImage(this.certificateHonors),
+            environmentalFacilities: this.ChangeImage(this.environmentalFacilities),
             characteristicService: this.characteristicService,
             siteFacilities: this.siteFacilities,
             openingHours: [{
@@ -469,12 +527,12 @@ export default {
 					}],
 					id: null
           }
-          this.form.resetFields()
-          this.resetValues()
-          let formData = Object.assign({}, values, params)
+          console.log(params)
+          
+          let formData = {...values, ...params}
           console.log(formData)
-          if (this.account.action === 'edit') {
-            console.log('sssss===========')
+          console.log(this.account)
+          if (this.account !== null && this.account.action === 'edit') {
             this.$emit('farmModify', formData)
           } else {
             this.$emit('farmAdd', formData)
@@ -482,6 +540,8 @@ export default {
           setTimeout(() => {
             this.visible = false
             this.confirmLoading = false
+            this.form.resetFields()
+            this.resetValues()
             this.$emit('ok', values)
           }, 1500)
         } else {

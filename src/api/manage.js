@@ -36,6 +36,13 @@ export function getFarmList (parameter) {
     params: parameter
   })
 }
+export function getGd (parameter) {
+  return axios({
+    url: '/config/district',
+    method: 'get',
+    params: parameter
+  })
+}
 export function getFarmTotal (parameter) {
   return axios({
     url: api.farmTotal,
